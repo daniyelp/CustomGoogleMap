@@ -1,0 +1,3 @@
+rootProject.name = "CustomGoogleMapExample"
+include ':app'
+include ':custom-google-map'

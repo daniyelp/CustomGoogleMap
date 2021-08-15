@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.customgooglemapexample.MyViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/design_default_color_background">
+
+        <com.example.custom_google_map.CustomMapView
+            android:id="@+id/map_custom"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:myLocationButtonPosition="top_right"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
