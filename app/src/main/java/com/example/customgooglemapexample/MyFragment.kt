@@ -1,6 +1,7 @@
 package com.example.customgooglemapexample
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,12 +28,16 @@ class MyFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_mine,
-            container,
-            false
-        )
+        try {
+            binding = DataBindingUtil.inflate(
+                inflater,
+                R.layout.fragment_mine,
+                container,
+                false
+            )
+        } catch (e: Exception) {
+            Log.d("INFLATING", e.stackTraceToString())
+        }
 
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
@@ -42,8 +47,12 @@ class MyFragment: Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        map_custom.myLocationButton = button_my_location
+        map_custom.primaryStatusLine = line_primary_status
+        map_custom.mapTypeSelector = selector_map_type
         map_custom.getCustomMapAsync {
             customGoogleMap = it
+            selector_map_type.customGoogleMap = it
             subscribeToObservers()
         }
     }
@@ -59,7 +68,15 @@ class MyFragment: Fragment() {
 
             gpsEnabled.observe(viewLifecycleOwner, Observer {
                 it?.let {
-                    customGoogleMap.available = it
+                    customGoogleMap.gpsOn = it
+                    Log.d("GPS", "gps status changed inside fragme")
+                }
+            })
+
+            internetEnabled.observe(viewLifecycleOwner, Observer {
+                it?.let {
+                    customGoogleMap.internetOn = it
+                    Log.d("INTERNET", "internet status changed inside fragment")
                 }
             })
 

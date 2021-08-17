@@ -2,6 +2,7 @@ package com.example.custom_google_map
 
 import android.animation.Animator
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -16,81 +17,157 @@ import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.view.updateLayoutParams
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
-import kotlinx.android.synthetic.main.line_gps_status.view.*
 import kotlinx.android.synthetic.main.map_view_custom.view.*
 import java.util.*
 
 
 class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayout(context, attributes) {
 
-    class StatusController(private val onStatusChange: (LocationStatus) -> Unit) {
-
+    private class StatusController(private val onStatusChange: () -> Unit) {
+        private val TAG = "STATUS_CONTROLLER"
+        enum class PrimaryStatus {
+            NOTHING,
+            INTERNET_OFF,
+            GPS_OFF,
+            ACQUIRING_LOCATION,
+            LOCATION_RETRIEVED
+        }
+        enum class InternetStatus {
+            INTERNET_ON,
+            INTERNET_OFF
+        }
         enum class LocationStatus {
-            OFF,
-            ON,
-            ACQUIRING_LOCATION
+            GPS_OFF,
+            ACQUIRING_LOCATION,
+            LOCATION_RETRIEVED,
+            CHILLING
+        }
+
+        var primaryStatus : PrimaryStatus = PrimaryStatus.NOTHING
+        private set(value) {
+            Log.d(TAG, "old value is ${primaryStatus.toString()}, new value is ${value}")
+            if(primaryStatus != value) {
+                Log.d(TAG, "on status change called with ${value}}")
+                field = value
+                onStatusChange()
+            }
+        }
+        var internetStatus : InternetStatus = InternetStatus.INTERNET_OFF
+        private
+        set(value) {
+            field = value
+            updatePrimaryStatus()
+        }
+
+        var locationTimer : Timer? = null
+        var locationStatus : LocationStatus = LocationStatus.GPS_OFF
+        private
+        set(value) {
+            field = value
+            when(value) {
+                LocationStatus.GPS_OFF -> {
+                    locationTimer?.cancel()
+                    locationTimer?.purge()
+                }
+                LocationStatus.ACQUIRING_LOCATION -> {
+                    locationTimer?.cancel()
+                    locationTimer?.purge()
+                }
+                LocationStatus.LOCATION_RETRIEVED -> {
+                    locationTimer = Timer().apply {
+                        scheduleAtFixedRate(
+                            object : TimerTask() {
+                                init {
+                                    needNewLocation = true
+                                }
+                                override fun run() {
+                                    Handler(Looper.getMainLooper()).post {
+                                        if(needNewLocation) {
+                                            locationStatus = LocationStatus.ACQUIRING_LOCATION
+                                        } else {
+                                            locationStatus = LocationStatus.CHILLING
+                                        }
+                                    }
+                                }
+                            },
+                            2000,
+                            2000
+                        )
+                    }
+                }
+                LocationStatus.CHILLING -> {
+                    locationTimer!!.cancel()
+                    locationTimer!!.purge()
+
+                    locationTimer = Timer().apply {
+                        scheduleAtFixedRate(
+                            object : TimerTask() {
+                                init {
+                                    needNewLocation = true
+                                }
+                                override fun run() {
+                                    Handler(Looper.getMainLooper()).post {
+                                        if(needNewLocation) {
+                                            locationStatus = LocationStatus.ACQUIRING_LOCATION
+                                        } else {
+                                            needNewLocation = true
+                                        }
+                                    }
+                                }
+                            },
+                            2000,
+                            2000
+                        )
+                    }
+                }
+            }
+            updatePrimaryStatus()
+        }
+
+        var internetOn = false
+        set(value) {
+            field = value
+            internetStatus = if(value) InternetStatus.INTERNET_ON else InternetStatus.INTERNET_OFF
         }
 
         private var needNewLocation = false
 
-        var status = LocationStatus.OFF
-        private set(value) {
+        var gpsOn = false
+        set(value) {
             field = value
-            if(value == LocationStatus.ON) {
-
-                Timer().scheduleAtFixedRate(
-                    object : TimerTask() {
-                        init {
-                            needNewLocation = true
-                        }
-                        override fun run() {
-                            Handler(Looper.getMainLooper()).post {
-                                if(needNewLocation) {
-                                    status = LocationStatus.ACQUIRING_LOCATION
-                                    cancel()
-                                } else {
-                                    needNewLocation = true
-                                }
-                            }
-                        }
-                    },
-                    3900,
-                    4000
-                )
+            if(!value) {
+                locationStatus = LocationStatus.GPS_OFF
+            } else {
+                when(locationStatus) {
+                    LocationStatus.GPS_OFF -> {
+                        locationStatus = LocationStatus.ACQUIRING_LOCATION
+                    }
+                    LocationStatus.ACQUIRING_LOCATION -> {} //no action
+                    LocationStatus.LOCATION_RETRIEVED -> {} //no action
+                }
             }
-            onStatusChange(value)
         }
 
-        var gpsActive = false
-            set(value) {
-                field = value
-                when(status) {
-                    LocationStatus.OFF -> {
-                        if(gpsActive) {
-                           status = LocationStatus.ACQUIRING_LOCATION
-                        }
-                    }
-                    LocationStatus.ON -> {
-                        if(!gpsActive) {
-                            status = LocationStatus.OFF
-                        }
-                    }
-                    LocationStatus.ACQUIRING_LOCATION -> {
-                        if(!gpsActive) {
-                            status = LocationStatus.OFF
-                        }
+        private fun updatePrimaryStatus() {
+            when(locationStatus) {
+                LocationStatus.GPS_OFF -> primaryStatus = PrimaryStatus.GPS_OFF
+                LocationStatus.ACQUIRING_LOCATION -> primaryStatus = PrimaryStatus.ACQUIRING_LOCATION
+                LocationStatus.LOCATION_RETRIEVED -> primaryStatus = PrimaryStatus.LOCATION_RETRIEVED
+                LocationStatus.CHILLING -> {
+                    if (internetStatus == InternetStatus.INTERNET_OFF) {
+                        primaryStatus = PrimaryStatus.INTERNET_OFF
                     }
                 }
             }
+        }
 
         fun newLocationAvailable() {
             needNewLocation = false
-            if(status == LocationStatus.ACQUIRING_LOCATION) {
-                status = LocationStatus.ON
+            if(locationStatus == LocationStatus.ACQUIRING_LOCATION) {
+                locationStatus = LocationStatus.LOCATION_RETRIEVED
             }
         }
     }
@@ -99,134 +176,13 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
 
         private val statusController: StatusController
 
-        init {
-            googleMap.setOnCameraMoveStartedListener {
-                if(it == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
-                    decenter()
-                }
-            }
-
-            btn_my_location.setOnClickListener {
-                onCenter()
-            }
-
-            statusController = StatusController {
-                updateMarker()
-                updateLine()
-            }
-
-            fab_map_type.setOnClickListener { fab ->
-                layout_map_type.apply {
-                    alpha = 0f
-                    visibility = View.VISIBLE
-                    animate()
-                        .alpha(1f)
-                        .setDuration(200)
-                        .setListener( object : Animator.AnimatorListener {
-                            override fun onAnimationStart(animation: Animator?) {
-                                fab.visibility = View.INVISIBLE
-                            }
-
-                            override fun onAnimationEnd(animation: Animator?) {
-
-                            }
-
-                            override fun onAnimationCancel(animation: Animator?) {
-
-                            }
-
-                            override fun onAnimationRepeat(animation: Animator?) {
-
-                            }
-
-                        }
-                        )
-                }
-            }
-
-            googleMap.setOnMapClickListener {
-                // Conduct the animation if the FAB is invisible (window open)
-                if (fab_map_type.visibility == View.INVISIBLE) {
-                    layout_map_type
-                        .animate()
-                        .alpha(0f)
-                        .setDuration(200)
-                        .setListener( object : Animator.AnimatorListener {
-                            override fun onAnimationStart(animation: Animator?) {
-                                fab_map_type.visibility = View.VISIBLE
-                            }
-
-                            override fun onAnimationEnd(animation: Animator?) {
-
-                            }
-
-                            override fun onAnimationCancel(animation: Animator?) {
-
-                            }
-
-                            override fun onAnimationRepeat(animation: Animator?) {
-
-                            }
-
-                        })
-                }
-            }
-
-            val oldColor = text_map_type_default.currentTextColor
-
-            fun selectTerrain() {
-                btn_map_type_terrain.setBackgroundResource(R.drawable.background_map_type_btn_post_click)
-                btn_map_type_default.setBackgroundResource(R.drawable.background_map_type_btn)
-                btn_map_type_satellite.setBackgroundResource(R.drawable.background_map_type_btn)
-                googleMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
-                text_map_type_terrain.setTextColor(Color.BLUE)
-                text_map_type_default.setTextColor(oldColor)
-                text_map_type_satellite.setTextColor(oldColor)
-            }
-
-            fun selectDefault() {
-                btn_map_type_default.setBackgroundResource(R.drawable.background_map_type_btn_post_click)
-                btn_map_type_terrain.setBackgroundResource(R.drawable.background_map_type_btn)
-                btn_map_type_satellite.setBackgroundResource(R.drawable.background_map_type_btn)
-                googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
-                text_map_type_default.setTextColor(Color.BLUE)
-                text_map_type_satellite.setTextColor(oldColor)
-                text_map_type_terrain.setTextColor(oldColor)
-            }
-
-            fun selectSatellite() {
-                btn_map_type_satellite.setBackgroundResource(R.drawable.background_map_type_btn_post_click)
-                btn_map_type_default.setBackgroundResource(R.drawable.background_map_type_btn)
-                btn_map_type_terrain.setBackgroundResource(R.drawable.background_map_type_btn)
-                googleMap.mapType = GoogleMap.MAP_TYPE_SATELLITE
-                text_map_type_satellite.setTextColor(Color.BLUE)
-                text_map_type_default.setTextColor(oldColor)
-                text_map_type_terrain.setTextColor(oldColor)
-            }
-
-            btn_map_type_terrain.setOnClickListener {
-                selectTerrain()
-            }
-            btn_map_type_default.setOnClickListener {
-                selectDefault()
-            }
-            btn_map_type_satellite.setOnClickListener {
-                selectSatellite()
-            }
-
-            selectDefault()
-
-        }
-
-        private var locationMarker: Marker? = null
-
-        private var center = true
+        var mapType : Int = GoogleMap.MAP_TYPE_NORMAL
             set(value) {
                 field = value
-
-                updateButtonState()
-                updateCamera()
+                googleMap.mapType = value
             }
+
+        private var locationMarker: Marker? = null
 
         private var lastLatLng: LatLng? = null
             set(value) {
@@ -237,24 +193,44 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
                 updateMarker()
             }
 
-        var available: Boolean = false
+        var gpsOn: Boolean = false
             set(value) {
                 field = value
-                statusController.gpsActive = value
+                statusController.gpsOn = value
             }
 
-        private fun updateLine() {
-            when(statusController.status) {
-                StatusController.LocationStatus.ON -> {
-                    Log.d("ANIMATION", "location on")
-                    line_gps_status.slide("GPS ON", Color.GREEN)
+        var internetOn: Boolean = false
+            set(value) {
+                field = value
+                statusController.internetOn = value
+            }
+
+        init {
+            googleMap.setOnCameraMoveStartedListener {
+                if(it == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
+                    myLocationButton.decenter()
                 }
-                StatusController.LocationStatus.OFF -> {
-                    line_gps_status.slide("GPS OFF", Color.RED, true)
-                }
-                StatusController.LocationStatus.ACQUIRING_LOCATION -> {
-                    line_gps_status.slide("ACQUIRING LOCATION", Color.BLUE, true)
-                }
+            }
+
+            myLocationButton.onCenter = {
+                updateCamera()
+            }
+
+            statusController = StatusController {
+                updateMarker()
+                updateStatusLine()
+            }
+
+        }
+
+        private fun updateStatusLine() {
+            Log.d("STATUS_CONTROLLER", "updateLine with primary status ${statusController.primaryStatus}")
+            when(statusController.primaryStatus) {
+                StatusController.PrimaryStatus.INTERNET_OFF -> primaryStatusLine.instant("INTERNET IS OFF", Color.GRAY, true)
+                StatusController.PrimaryStatus.GPS_OFF -> primaryStatusLine.instant("GPS IS OFF", Color.RED, true)
+                StatusController.PrimaryStatus.ACQUIRING_LOCATION -> primaryStatusLine.instant("ACQUIRING LOCATION", Color.BLUE, true)
+                StatusController.PrimaryStatus.LOCATION_RETRIEVED -> primaryStatusLine.instant("LOCATION ACQUIRED", Color.GREEN, false)
+                else -> {}
             }
         }
 
@@ -273,26 +249,14 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
                 .position(lastLatLng!!)
                 .icon(vectorToBitmap(
                     R.drawable.ic_location,
-                    when(statusController.status) {
-                        StatusController.LocationStatus.ON -> Color.BLUE
+                    when(statusController.primaryStatus) {
+                        StatusController.PrimaryStatus.LOCATION_RETRIEVED -> Color.BLUE
                         else -> Color.LTGRAY
-                    }))
+                    },
+                    resources))
 
             locationMarker = googleMap.addMarker(markerOptions)
 
-        }
-
-        private fun vectorToBitmap(@DrawableRes id: Int, @ColorInt color: Int): BitmapDescriptor? {
-            val vectorDrawable = ResourcesCompat.getDrawable(resources, id, null)
-            val bitmap = Bitmap.createBitmap(
-                vectorDrawable!!.intrinsicWidth,
-                vectorDrawable.intrinsicHeight, Bitmap.Config.ARGB_8888
-            )
-            val canvas = Canvas(bitmap)
-            vectorDrawable.setBounds(0, 0, canvas.width, canvas.height)
-            DrawableCompat.setTint(vectorDrawable, color)
-            vectorDrawable.draw(canvas)
-            return BitmapDescriptorFactory.fromBitmap(bitmap)
         }
 
         private fun updateCamera() {
@@ -300,35 +264,9 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
                 return
             }
 
-            if(center) {
+            if(myLocationButton.center) {
                 animatedZoomTo(lastLatLng!!)
             }
-        }
-
-        private fun updateButtonState() {
-            if (center) {
-                btn_my_location.setImageDrawable(
-                    resources.getDrawable(
-                        R.drawable.ic_my_location_blue,
-                        null
-                    )
-                )
-            } else {
-                btn_my_location.setImageDrawable(
-                    resources.getDrawable(
-                        R.drawable.ic_my_location_black,
-                        null
-                    )
-                )
-            }
-        }
-
-        fun onCenter() {
-            center = !center
-        }
-
-        private fun decenter() {
-            center = false
         }
 
         fun newLatLng(latLng: LatLng) {
@@ -367,34 +305,13 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
     }
 
     private lateinit var customGoogleMap: CustomGoogleMap
+    //the two below should be set by the class who uses this custom view
+    lateinit var myLocationButton: MyLocationButton
+    lateinit var primaryStatusLine: PrimaryStatusLine
+    lateinit var mapTypeSelector: MapTypeSelector
 
     init {
         inflate(context, R.layout.map_view_custom, this)
-        val a = context.obtainStyledAttributes(attributes, R.styleable.CustomMapView)
-        var pos = a.getInt(R.styleable.CustomMapView_myLocationButtonPosition, 1)
-        btn_my_location.updateLayoutParams<LayoutParams> {
-            when(pos) {
-                0 -> {
-                    leftToLeft = R.id.layout_custom_map
-                    topToTop = R.id.layout_custom_map
-                }
-                1 -> {
-                    rightToRight = R.id.layout_custom_map
-                    topToBottom = R.id.layout_map_type
-                }
-                2 -> {
-                    rightToRight = R.id.layout_custom_map
-                    bottomToBottom = R.id.layout_custom_map
-                }
-                3 -> {
-                    leftToLeft = R.id.layout_custom_map
-                    bottomToBottom = R.id.layout_custom_map
-                } else -> {
-                    rightToRight = R.id.layout_custom_map
-                    bottomToBottom = R.id.layout_custom_map
-                }
-            }
-        }
     }
 
     fun getCustomMapAsync(onCustomMapReadyCallback : (CustomGoogleMap) -> Unit) {

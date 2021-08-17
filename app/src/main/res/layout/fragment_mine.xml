@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -18,6 +19,31 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:myLocationButtonPosition="top_right"/>
+
+
+        <com.example.custom_google_map.PrimaryStatusLine
+            android:layout_margin="8dp"
+            android:id="@+id/line_primary_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.example.custom_google_map.MapTypeSelector
+            android:id="@+id/selector_map_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/line_primary_status" />
+
+        <com.example.custom_google_map.MyLocationButton
+            android:layout_margin="8dp"
+            android:id="@+id/button_my_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

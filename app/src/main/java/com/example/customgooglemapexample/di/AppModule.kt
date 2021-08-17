@@ -2,6 +2,7 @@ package com.example.customgooglemapexample.di
 
 import android.content.Context
 import com.example.customgooglemapexample.util.GpsBroadcastReceiver
+import com.example.customgooglemapexample.util.InternetBroadcastReceiver
 import com.example.customgooglemapexample.util.LocationTracker
 import dagger.Module
 import dagger.Provides
@@ -18,6 +19,12 @@ object AppModule {
     @Provides
     fun provideGpsBroadcastReceiver(@ApplicationContext context: Context) : GpsBroadcastReceiver {
         return GpsBroadcastReceiver(context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideInternetBroadcastReceiver(@ApplicationContext context: Context) : InternetBroadcastReceiver {
+        return InternetBroadcastReceiver(context)
     }
 
     @Singleton
