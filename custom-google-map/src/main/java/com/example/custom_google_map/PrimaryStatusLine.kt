@@ -28,9 +28,12 @@ class PrimaryStatusLine(context: Context, attributes: AttributeSet) : Constraint
 
     fun instant(text: String, color: Int, infinite: Boolean = false) {
         Log.d(TAG, "LINE DisPLAYED")
-        view.text = text
-        view.backgroundTintList = ColorStateList.valueOf(color)
-        view.visibility = View.VISIBLE
+        view.apply {
+            this.text = text
+            backgroundTintList = ColorStateList.valueOf(color)
+            visibility = View.VISIBLE
+            invalidate()
+        }
         if(!infinite) {
             Handler(Looper.getMainLooper()).postDelayed({
                 slideLeft()
@@ -39,8 +42,11 @@ class PrimaryStatusLine(context: Context, attributes: AttributeSet) : Constraint
     }
 
     fun slideRight(text: String, color: Int, infinite: Boolean = false) {
-        view.text = text
-        view.backgroundTintList = ColorStateList.valueOf(color)
+        view.apply {
+            this.text = text
+            backgroundTintList = ColorStateList.valueOf(color)
+            invalidate()
+        }
         slideRight()
         if(!infinite) {
             Handler(Looper.getMainLooper()).postDelayed({
