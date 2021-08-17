@@ -14,7 +14,6 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import kotlinx.android.synthetic.main.line_primary_status.view.*
 
-
 class PrimaryStatusLine(context: Context, attributes: AttributeSet) : ConstraintLayout(context, attributes) {
 
     private val TAG = "LINE"
@@ -27,12 +26,12 @@ class PrimaryStatusLine(context: Context, attributes: AttributeSet) : Constraint
     }
 
     fun instant(text: String, color: Int, infinite: Boolean = false) {
-        Log.d(TAG, "LINE DisPLAYED")
         view.apply {
             this.text = text
             backgroundTintList = ColorStateList.valueOf(color)
+            //if I don't do this, the width of the textview won't shrink if I set the text smaller than the previous text
+            visibility = View.GONE
             visibility = View.VISIBLE
-            invalidate()
         }
         if(!infinite) {
             Handler(Looper.getMainLooper()).postDelayed({
@@ -45,7 +44,7 @@ class PrimaryStatusLine(context: Context, attributes: AttributeSet) : Constraint
         view.apply {
             this.text = text
             backgroundTintList = ColorStateList.valueOf(color)
-            invalidate()
+            visibility = View.GONE
         }
         slideRight()
         if(!infinite) {
