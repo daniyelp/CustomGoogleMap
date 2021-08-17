@@ -1,9 +1,9 @@
 package com.example.customgooglemapexample.di
 
 import android.content.Context
-import com.example.customgooglemapexample.util.GpsBroadcastReceiver
-import com.example.customgooglemapexample.util.InternetBroadcastReceiver
 import com.example.customgooglemapexample.util.LocationTracker
+import com.example.gpsbroadcastreceiver.GpsBroadcastReceiver
+import com.example.internetbroadcastreceiver.InternetBroadcastReceiver
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

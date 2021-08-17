@@ -1,9 +1,9 @@
 package com.example.customgooglemapexample
 
 import androidx.lifecycle.*
-import com.example.customgooglemapexample.util.GpsBroadcastReceiver
-import com.example.customgooglemapexample.util.InternetBroadcastReceiver
 import com.example.customgooglemapexample.util.LocationTracker
+import com.example.gpsbroadcastreceiver.GpsBroadcastReceiver
+import com.example.internetbroadcastreceiver.InternetBroadcastReceiver
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
