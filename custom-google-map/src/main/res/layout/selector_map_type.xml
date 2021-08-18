@@ -12,6 +12,8 @@
         android:backgroundTint="@color/white"
         android:src="@drawable/ic_layers"
         android:tint="@null"
+        app:elevation="0dp"
+        app:borderWidth="0dp"
         app:fabSize="mini"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
