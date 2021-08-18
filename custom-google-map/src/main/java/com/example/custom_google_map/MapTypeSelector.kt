@@ -12,7 +12,19 @@ import kotlinx.android.synthetic.main.selector_map_type.view.*
 
 class MapTypeSelector(context: Context, attributeSet: AttributeSet) : ConstraintLayout(context, attributeSet) {
 
-    lateinit var customGoogleMap: CustomMapView.CustomGoogleMap
+    //I do this strange thing below so that I can call a function right away after customGoogleMap
+    //has been initialized
+    //You can't use a custom setter for a lateinit var
+    private var _customGoogleMap: CustomMapView.CustomGoogleMap? = null
+        set(value) {
+            field = value
+            selectDefault()
+        }
+    var customGoogleMap: CustomMapView.CustomGoogleMap
+        get() = _customGoogleMap ?: throw UninitializedPropertyAccessException("customGoogleMap was not initialized")
+        set(value) {
+            _customGoogleMap = value
+        }
 
     var selectorVisible = false
     val oldColor : Int
