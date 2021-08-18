@@ -45,5 +45,51 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/button_connect"
+                android:onClick="@{() -> viewModel.connect()}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_path"
+                android:backgroundTint="@color/purple_200"/>
+
+            <Button
+                android:id="@+id/button_undo_marker"
+                android:enabled="@{viewModel.undoMarkerEnabled}"
+                android:onClick="@{() -> viewModel.undoMarker()}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/purple_200"
+                android:drawableLeft="@drawable/ic_undo"
+                android:text="marker" />
+
+            <Button
+                android:id="@+id/button_undo_path"
+                android:enabled="@{viewModel.undoPathEnabled}"
+                android:onClick="@{() -> viewModel.undoPath()}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/purple_200"
+                android:drawableLeft="@drawable/ic_undo"
+                android:text="path" />
+
+            <ImageButton
+                android:id="@+id/button_clear"
+                android:onClick="@{() -> viewModel.reset()}"
+                android:layout_width="wrap_content"
+                android:backgroundTint="@color/purple_200"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_clear" />
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -15,7 +15,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import kotlinx.android.synthetic.main.line_primary_status.view.*
 
 class PrimaryStatusLine(context: Context, attributes: AttributeSet) : ConstraintLayout(context, attributes) {
-    
+
     private val view: TextView
     //in case we use different threads
     @Volatile private var infinite = false

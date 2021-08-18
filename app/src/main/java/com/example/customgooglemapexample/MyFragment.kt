@@ -28,16 +28,12 @@ class MyFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        try {
-            binding = DataBindingUtil.inflate(
-                inflater,
-                R.layout.fragment_mine,
-                container,
-                false
-            )
-        } catch (e: Exception) {
-            Log.d("INFLATING", e.stackTraceToString())
-        }
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_mine,
+            container,
+            false
+        )
 
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
@@ -79,6 +75,8 @@ class MyFragment: Fragment() {
                     Log.d("INTERNET", "internet status changed inside fragment")
                 }
             })
+
+            
 
         }
 
