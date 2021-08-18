@@ -60,7 +60,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_path"
-                android:backgroundTint="@color/purple_200"/>
+                android:backgroundTint="@color/color_action_button"
+                app:tint="@color/color_action_button_text" />
 
             <Button
                 android:id="@+id/button_undo_marker"
@@ -68,7 +69,8 @@
                 android:onClick="@{() -> viewModel.undoMarker()}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/purple_200"
+                android:backgroundTint="@color/color_action_button"
+                app:tint="@color/color_action_button_text"
                 android:drawableLeft="@drawable/ic_undo"
                 android:text="marker" />
 
@@ -78,7 +80,8 @@
                 android:onClick="@{() -> viewModel.undoPath()}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/purple_200"
+                android:backgroundTint="@color/color_action_button"
+                app:tint="@color/color_action_button_text"
                 android:drawableLeft="@drawable/ic_undo"
                 android:text="path" />
 
@@ -86,7 +89,8 @@
                 android:id="@+id/button_clear"
                 android:onClick="@{() -> viewModel.reset()}"
                 android:layout_width="wrap_content"
-                android:backgroundTint="@color/purple_200"
+                android:backgroundTint="@color/color_action_button"
+                app:tint="@color/color_action_button_text"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_clear" />
         </LinearLayout>
