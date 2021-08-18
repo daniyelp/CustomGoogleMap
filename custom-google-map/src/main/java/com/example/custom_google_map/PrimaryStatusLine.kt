@@ -15,10 +15,10 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import kotlinx.android.synthetic.main.line_primary_status.view.*
 
 class PrimaryStatusLine(context: Context, attributes: AttributeSet) : ConstraintLayout(context, attributes) {
-
-    private val TAG = "LINE"
+    
     private val view: TextView
-
+    //in case we use different threads
+    @Volatile private var infinite = false
     init {
         inflate(context, R.layout.line_primary_status, this)
         view = text_line_primary_status
@@ -26,6 +26,7 @@ class PrimaryStatusLine(context: Context, attributes: AttributeSet) : Constraint
     }
 
     fun instant(text: String, color: Int, infinite: Boolean = false) {
+        this.infinite = infinite
         view.apply {
             this.text = text
             backgroundTintList = ColorStateList.valueOf(color)
@@ -33,14 +34,17 @@ class PrimaryStatusLine(context: Context, attributes: AttributeSet) : Constraint
             visibility = View.GONE
             visibility = View.VISIBLE
         }
-        if(!infinite) {
+        if(infinite) {
             Handler(Looper.getMainLooper()).postDelayed({
-                slideLeft()
+                //infinite could change in the meanwhile
+                if(!this.infinite)
+                    slideLeft()
             }, 2000)
         }
     }
 
     fun slideRight(text: String, color: Int, infinite: Boolean = false) {
+        this.infinite = infinite
         view.apply {
             this.text = text
             backgroundTintList = ColorStateList.valueOf(color)
@@ -49,7 +53,9 @@ class PrimaryStatusLine(context: Context, attributes: AttributeSet) : Constraint
         slideRight()
         if(!infinite) {
             Handler(Looper.getMainLooper()).postDelayed({
-                slideLeft()
+                if(!this.infinite) {
+                    slideLeft()
+                }
             }, 2000)
         }
     }
