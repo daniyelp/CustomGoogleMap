@@ -84,14 +84,14 @@ class MyViewModel @Inject constructor (
         startingIndexForPath.value = 0
     }
 
-    fun connect() {
+    fun connect(animate: Boolean = false) {
         val markers = _markers.value!!.list
         val path = markers.subList(startingIndexForPath.value!!, markers.size)
         if(path.size < 2) {
             return
         }
         startingIndexForPath.value = markers.size
-        addPath(path)
+        addPath(path, animate)
     }
 
     fun undoMarker() {
@@ -109,15 +109,15 @@ class MyViewModel @Inject constructor (
         }
     }
 
-    private fun addPath(path: List<LatLng>) {
+    private fun addPath(path: List<LatLng>, animate: Boolean = false) {
         val list = _paths.value!!.list.toMutableList()
         list.add(path)
-        _paths.value = Resource(list, Status.ADDED_ELEMENT)
+        _paths.value = Resource(list, Status.ADDED_ELEMENT, animate = animate)
     }
 
-    private fun addPaths(paths: List<List<LatLng>>) {
+    private fun addPaths(paths: List<List<LatLng>>, animate: Boolean = false) {
         val list = _paths.value!!.list.toMutableList()
         list.addAll(paths)
-        _paths.value = Resource(list, Status.ADDED_SEVERAL_ELEMENTS, paths.size)
+        _paths.value = Resource(list, Status.ADDED_SEVERAL_ELEMENTS, paths.size, animate = animate)
     }
 }

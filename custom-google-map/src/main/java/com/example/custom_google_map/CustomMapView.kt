@@ -1,25 +1,18 @@
 package com.example.custom_google_map
 
-import android.animation.Animator
 import android.content.Context
-import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
-import android.view.View
-import androidx.annotation.ColorInt
-import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
+import de.p72b.maps.animation.AnimatedPolyline
 import kotlinx.android.synthetic.main.map_view_custom.view.*
 import java.util.*
 
@@ -47,109 +40,109 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
         }
 
         var primaryStatus : PrimaryStatus = PrimaryStatus.NOTHING
-        private set(value) {
-            Log.d(TAG, "old value is ${primaryStatus.toString()}, new value is ${value}")
-            if(primaryStatus != value) {
-                Log.d(TAG, "on status change called with ${value}}")
-                field = value
-                onStatusChange()
+            private set(value) {
+                Log.d(TAG, "old value is ${primaryStatus.toString()}, new value is ${value}")
+                if(primaryStatus != value) {
+                    Log.d(TAG, "on status change called with ${value}}")
+                    field = value
+                    onStatusChange()
+                }
             }
-        }
         var internetStatus : InternetStatus = InternetStatus.INTERNET_OFF
-        private
-        set(value) {
-            field = value
-            updatePrimaryStatus()
-        }
+            private
+            set(value) {
+                field = value
+                updatePrimaryStatus()
+            }
 
         var locationTimer : Timer? = null
         var locationStatus : LocationStatus = LocationStatus.GPS_OFF
-        private
-        set(value) {
-            field = value
-            when(value) {
-                LocationStatus.GPS_OFF -> {
-                    locationTimer?.cancel()
-                    locationTimer?.purge()
-                }
-                LocationStatus.ACQUIRING_LOCATION -> {
-                    locationTimer?.cancel()
-                    locationTimer?.purge()
-                }
-                LocationStatus.LOCATION_RETRIEVED -> {
-                    locationTimer = Timer().apply {
-                        scheduleAtFixedRate(
-                            object : TimerTask() {
-                                init {
-                                    needNewLocation = true
-                                }
-                                override fun run() {
-                                    Handler(Looper.getMainLooper()).post {
-                                        if(needNewLocation) {
-                                            locationStatus = LocationStatus.ACQUIRING_LOCATION
-                                        } else {
-                                            locationStatus = LocationStatus.CHILLING
+            private
+            set(value) {
+                field = value
+                when(value) {
+                    LocationStatus.GPS_OFF -> {
+                        locationTimer?.cancel()
+                        locationTimer?.purge()
+                    }
+                    LocationStatus.ACQUIRING_LOCATION -> {
+                        locationTimer?.cancel()
+                        locationTimer?.purge()
+                    }
+                    LocationStatus.LOCATION_RETRIEVED -> {
+                        locationTimer = Timer().apply {
+                            scheduleAtFixedRate(
+                                object : TimerTask() {
+                                    init {
+                                        needNewLocation = true
+                                    }
+                                    override fun run() {
+                                        Handler(Looper.getMainLooper()).post {
+                                            if(needNewLocation) {
+                                                locationStatus = LocationStatus.ACQUIRING_LOCATION
+                                            } else {
+                                                locationStatus = LocationStatus.CHILLING
+                                            }
                                         }
                                     }
-                                }
-                            },
-                            2000,
-                            2000
-                        )
+                                },
+                                2000,
+                                2000
+                            )
+                        }
                     }
-                }
-                LocationStatus.CHILLING -> {
-                    locationTimer!!.cancel()
-                    locationTimer!!.purge()
+                    LocationStatus.CHILLING -> {
+                        locationTimer!!.cancel()
+                        locationTimer!!.purge()
 
-                    locationTimer = Timer().apply {
-                        scheduleAtFixedRate(
-                            object : TimerTask() {
-                                init {
-                                    needNewLocation = true
-                                }
-                                override fun run() {
-                                    Handler(Looper.getMainLooper()).post {
-                                        if(needNewLocation) {
-                                            locationStatus = LocationStatus.ACQUIRING_LOCATION
-                                        } else {
-                                            needNewLocation = true
+                        locationTimer = Timer().apply {
+                            scheduleAtFixedRate(
+                                object : TimerTask() {
+                                    init {
+                                        needNewLocation = true
+                                    }
+                                    override fun run() {
+                                        Handler(Looper.getMainLooper()).post {
+                                            if(needNewLocation) {
+                                                locationStatus = LocationStatus.ACQUIRING_LOCATION
+                                            } else {
+                                                needNewLocation = true
+                                            }
                                         }
                                     }
-                                }
-                            },
-                            2000,
-                            2000
-                        )
+                                },
+                                2000,
+                                2000
+                            )
+                        }
                     }
                 }
+                updatePrimaryStatus()
             }
-            updatePrimaryStatus()
-        }
 
         var internetOn = false
-        set(value) {
-            field = value
-            internetStatus = if(value) InternetStatus.INTERNET_ON else InternetStatus.INTERNET_OFF
-        }
+            set(value) {
+                field = value
+                internetStatus = if(value) InternetStatus.INTERNET_ON else InternetStatus.INTERNET_OFF
+            }
 
         private var needNewLocation = false
 
         var gpsOn = false
-        set(value) {
-            field = value
-            if(!value) {
-                locationStatus = LocationStatus.GPS_OFF
-            } else {
-                when(locationStatus) {
-                    LocationStatus.GPS_OFF -> {
-                        locationStatus = LocationStatus.ACQUIRING_LOCATION
+            set(value) {
+                field = value
+                if(!value) {
+                    locationStatus = LocationStatus.GPS_OFF
+                } else {
+                    when(locationStatus) {
+                        LocationStatus.GPS_OFF -> {
+                            locationStatus = LocationStatus.ACQUIRING_LOCATION
+                        }
+                        LocationStatus.ACQUIRING_LOCATION -> {} //no action
+                        LocationStatus.LOCATION_RETRIEVED -> {} //no action
                     }
-                    LocationStatus.ACQUIRING_LOCATION -> {} //no action
-                    LocationStatus.LOCATION_RETRIEVED -> {} //no action
                 }
             }
-        }
 
         private fun updatePrimaryStatus() {
             when(locationStatus) {
@@ -313,19 +306,24 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
             marker?.remove()
         }
 
-        private var polylines = mutableListOf<Polyline>()
+        private var polylines = mutableListOf<AnimatedPolyline>()
 
-        fun addPath(path: List<LatLng>, color: Int) {
+        fun addPath(path: List<LatLng>, color: Int, animated: Boolean = false) {
             if(path.size in listOf(0, 1))
                 return
 
-            val polyline = googleMap.addPolyline(PolylineOptions().addAll(path).color(color))
+            val polyline = AnimatedPolyline(
+                googleMap,
+                path,
+                PolylineOptions().color(color),
+                if(animated) 1000 else 0
+            ).also { it.start() }
             polylines.add(polyline)
         }
 
-        fun addPaths(paths: List<List<LatLng>>, color: Int) {
+        fun addPaths(paths: List<List<LatLng>>, color: Int, animated: Boolean = false) {
             paths.forEach {
-                addPath(it, color)
+                addPath(it, color, animated)
             }
         }
 
@@ -382,12 +380,12 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
     }
 
     fun onCreate(savedInstanceState: Bundle?) {
-         map_view.onCreate(savedInstanceState)
+        map_view.onCreate(savedInstanceState)
 
     }
 
     fun onStart() {
-         map_view.onStart()
+        map_view.onStart()
     }
 
     fun onResume() {

@@ -104,7 +104,7 @@ class MyFragment: Fragment() {
                 it?.let {
                     when(it.status) {
                         Status.ADDED_ELEMENT -> {
-                            customGoogleMap.addPath(it.list.last(), Color.BLACK)
+                            customGoogleMap.addPath(it.list.last(), Color.BLACK, it.animate ?: false)
                         }
                         Status.RESETED -> {
                             customGoogleMap.removePaths()
@@ -113,7 +113,7 @@ class MyFragment: Fragment() {
                             customGoogleMap.removeLastPath()
                         }
                         Status.ADDED_SEVERAL_ELEMENTS -> {
-                            customGoogleMap.addPaths(it.list.takeLast(it.n!!), Color.RED)
+                            customGoogleMap.addPaths(it.list.takeLast(it.n!!), Color.RED, it.animate ?: false)
                         }
                         else -> {
 
