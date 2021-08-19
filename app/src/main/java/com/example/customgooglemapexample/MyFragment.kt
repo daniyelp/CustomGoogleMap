@@ -122,6 +122,15 @@ class MyFragment: Fragment() {
                 }
             })
 
+            zoomToFit.observe(viewLifecycleOwner, Observer {
+                it?.let {
+                    if(it) {
+                        customGoogleMap.zoomToFit(markers.value!!.list, animated = true)
+                        viewModel.zoomToFitHandled()
+                    }
+                }
+            })
+
         }
 
     }

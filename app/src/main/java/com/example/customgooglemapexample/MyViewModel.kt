@@ -28,6 +28,17 @@ class MyViewModel @Inject constructor (
     private val _paths = MutableLiveData(Resource<List<LatLng>>(listOf(), Status.INITIALIZED))
     val paths : LiveData<Resource<List<LatLng>>> = _paths
 
+    private val _zoomToFit = MutableLiveData<Boolean>(false)
+    val zoomToFit : LiveData<Boolean> = _zoomToFit
+
+    fun zoomToFit() {
+        _zoomToFit.value = true
+    }
+
+    fun zoomToFitHandled() {
+        _zoomToFit.value = false
+    }
+
     private val startingIndexForPath = MutableLiveData(0)
 
     val connectEnabled : LiveData<Boolean> = CombinedLiveData(_markers, startingIndexForPath) {
@@ -48,6 +59,12 @@ class MyViewModel @Inject constructor (
     val undoPathEnabled : LiveData<Boolean> = Transformations.map(_paths) {
         it?.let {
             it.list.isNotEmpty()
+        }
+    }
+
+    val zoomToFitEnabled : LiveData<Boolean> = Transformations.map(_markers) {
+        it?.let {
+            it.list.size >= 2
         }
     }
 

@@ -258,7 +258,7 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
             }
 
             if(myLocationButton.center) {
-                animatedZoomTo(lastLatLng!!)
+                zoomTo(lastLatLng!!, true)
             }
         }
 
@@ -345,19 +345,20 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
             }
         }
 
-        fun animatedZoomToFit(path: List<LatLng>) {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(getBoundsToFit(path), 20))
+        fun zoomToFit(path: List<LatLng>, animated: Boolean = false) {
+            if(animated) {
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(getBoundsToFit(path), 20))
+            } else {
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(getBoundsToFit(path), 20))
+            }
         }
 
-        fun instantZoomToFit(path: List<LatLng>) {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(getBoundsToFit(path), 20))
-        }
-
-        fun instantZoomTo(latLng: LatLng) {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
-        }
-        fun animatedZoomTo(latLng: LatLng) {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+        fun zoomTo(latLng: LatLng, animated: Boolean = false) {
+            if(animated) {
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+            } else {
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+            }
         }
 
     }
