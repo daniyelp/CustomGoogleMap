@@ -2,3 +2,4 @@ rootProject.name = "CustomGoogleMapExample"
 include ':app'
 include ':custom-google-map'
 include ':snap-to-roads'
+include ':openstreetmap'
