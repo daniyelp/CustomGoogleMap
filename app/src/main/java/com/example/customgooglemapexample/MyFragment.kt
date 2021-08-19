@@ -1,5 +1,6 @@
 package com.example.customgooglemapexample
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.example.custom_google_map.CustomMapView
 import com.example.customgooglemapexample.databinding.FragmentMineBinding
+import com.example.customgooglemapexample.util.Status
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_mine.*
 
@@ -50,6 +52,9 @@ class MyFragment: Fragment() {
             customGoogleMap = it
             selector_map_type.customGoogleMap = it
             subscribeToObservers()
+            customGoogleMap.setOnMapLongClickListener { latLng ->
+                viewModel.onNewMarker(latLng)
+            }
         }
     }
 
@@ -76,7 +81,46 @@ class MyFragment: Fragment() {
                 }
             })
 
-            
+            markers.observe(viewLifecycleOwner, Observer {
+                it?.let {
+                    when (it.status) {
+                        Status.RESETED -> {
+                            customGoogleMap.removeMarkers()
+                        }
+                        Status.ADDED_ELEMENT -> {
+                            customGoogleMap.addAsMarker(it.list.last())
+                        }
+                        Status.REMOVED_LAST_ELEMENT -> {
+                            customGoogleMap.removeLastMarkerIfAny()
+                        }
+                        else -> {
+
+                        }
+                    }
+                }
+            })
+
+            paths.observe(viewLifecycleOwner, Observer {
+                it?.let {
+                    when(it.status) {
+                        Status.ADDED_ELEMENT -> {
+                            customGoogleMap.addPath(it.list.last(), Color.BLACK)
+                        }
+                        Status.RESETED -> {
+                            customGoogleMap.removePaths()
+                        }
+                        Status.REMOVED_LAST_ELEMENT -> {
+                            customGoogleMap.removeLastPath()
+                        }
+                        Status.ADDED_SEVERAL_ELEMENTS -> {
+                            customGoogleMap.addPaths(it.list.takeLast(it.n!!), Color.RED)
+                        }
+                        else -> {
+
+                        }
+                    }
+                }
+            })
 
         }
 

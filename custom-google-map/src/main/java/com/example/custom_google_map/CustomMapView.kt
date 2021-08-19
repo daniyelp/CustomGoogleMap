@@ -172,7 +172,7 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
         }
     }
 
-    inner class CustomGoogleMap constructor(private val googleMap: GoogleMap) {
+    inner class CustomGoogleMap constructor(val googleMap: GoogleMap) {
 
         private val statusController: StatusController
 
@@ -284,6 +284,66 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
         fun onSnapshotReady(onSnapshotReadyCallback : (Bitmap) -> Unit) {
             googleMap.snapshot {
                 onSnapshotReadyCallback(it)
+            }
+        }
+
+        private var markers = mutableListOf<Marker>()
+
+        fun addAsMarker(latLng: LatLng) {
+            val marker = googleMap.addMarker(MarkerOptions()
+                .position(latLng)
+                .icon(BitmapDescriptorFactory.defaultMarker((markers.size * 10).toFloat() % 360)))
+                .also { it.showInfoWindow()}
+            markers.add(marker)
+        }
+
+        fun addAsMarkers(latLngs: List<LatLng>) {
+            latLngs.forEach {
+                addAsMarker(it)
+            }
+        }
+
+        fun removeMarkers() {
+            markers.forEach{it.remove()}
+            markers = mutableListOf()
+        }
+
+        fun removeLastMarkerIfAny() {
+            var marker = markers.removeLastOrNull()
+            marker?.remove()
+        }
+
+        private var polylines = mutableListOf<Polyline>()
+
+        fun addPath(path: List<LatLng>, color: Int) {
+            if(path.size in listOf(0, 1))
+                return
+
+            val polyline = googleMap.addPolyline(PolylineOptions().addAll(path).color(color))
+            polylines.add(polyline)
+        }
+
+        fun addPaths(paths: List<List<LatLng>>, color: Int) {
+            paths.forEach {
+                addPath(it, color)
+            }
+        }
+
+        fun removePaths() {
+            polylines.forEach {
+                it.remove()
+            }
+            polylines = mutableListOf()
+        }
+
+        fun removeLastPath() {
+            val polyline = polylines.removeLastOrNull()
+            polyline?.remove()
+        }
+
+        fun setOnMapLongClickListener(f : (latLng: LatLng) -> Unit) {
+            googleMap.setOnMapLongClickListener {
+                f(it)
             }
         }
 
