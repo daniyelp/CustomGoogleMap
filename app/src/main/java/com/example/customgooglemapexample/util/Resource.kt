@@ -1,6 +1,6 @@
 package com.example.customgooglemapexample.util
 
-data class Resource<T>(val list: List<T>, val status: Status, val n: Int? = null, val animate: Boolean? = null)
+data class Resource<T>(val list: List<T>, val status: Status, val n: Int? = null, val animate: Boolean? = null, val special: Boolean = false)
 
 enum class Status {
     INITIALIZED,

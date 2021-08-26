@@ -1,9 +1,11 @@
 package com.example.customgooglemapexample.di
 
 import android.content.Context
+import com.example.customgooglemapexample.R
 import com.example.customgooglemapexample.util.LocationTracker
 import com.example.gpsbroadcastreceiver.GpsBroadcastReceiver
 import com.example.internetbroadcastreceiver.InternetBroadcastReceiver
+import com.example.snap_to_roads.SnapToRoads
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,4 +34,21 @@ object AppModule {
     fun provideLocationTracker(@ApplicationContext context: Context) : LocationTracker {
         return LocationTracker(context)
     }
+
+    @Singleton
+    @Provides
+    fun provideSnapToRoads(@ApplicationContext context: Context) : SnapToRoads{
+        val apiKey = context.resources.getString(R.string.google_maps_api_key)
+        return SnapToRoads(apiKey)
+    }
+
+    //below is very bad design
+    /*@Singleton
+    @Provides
+    fun provideApiKey(@ApplicationContext context: Context) : String {
+        return context.resources.getString(R.string.google_maps_api_key)
+    }*/
+
+
+
 }

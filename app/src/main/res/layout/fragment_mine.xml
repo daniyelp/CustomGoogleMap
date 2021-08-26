@@ -84,6 +84,16 @@
             </LinearLayout>
 
             <Button
+                android:id="@+id/button_snap_to_roads"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/color_action_button"
+                android:enabled="@{viewModel.snapToRoadsEnabled}"
+                android:onClick="@{() -> viewModel.snapToRoads()}"
+                app:tint="@color/color_action_button_text"
+                android:text="STR" />
+
+            <Button
                 android:id="@+id/button_undo_marker"
                 android:enabled="@{viewModel.undoMarkerEnabled}"
                 android:onClick="@{() -> viewModel.undoMarker()}"

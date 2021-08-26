@@ -1,5 +1,6 @@
 package com.example.customgooglemapexample
 
+import android.view.animation.Transformation
 import androidx.lifecycle.*
 import com.example.customgooglemapexample.util.CombinedLiveData
 import com.example.customgooglemapexample.util.LocationTracker
@@ -7,15 +8,19 @@ import com.example.customgooglemapexample.util.Resource
 import com.example.customgooglemapexample.util.Status
 import com.example.gpsbroadcastreceiver.GpsBroadcastReceiver
 import com.example.internetbroadcastreceiver.InternetBroadcastReceiver
+import com.example.snap_to_roads.SnapToRoads
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class MyViewModel @Inject constructor (
     private val locationTracker: LocationTracker,
     private val gpsBroadcastReceiver: GpsBroadcastReceiver,
-    private val internetBroadcastReceiver: InternetBroadcastReceiver
+    private val internetBroadcastReceiver: InternetBroadcastReceiver,
+    private val snapToRoads: SnapToRoads
     ): ViewModel() {
 
     val lastLocation : LiveData<LatLng> = locationTracker.lastLocation
@@ -48,6 +53,12 @@ class MyViewModel @Inject constructor (
                     startingIndexForPath <= markers.list.size - 2
                 }
             }
+    }
+
+    val snapToRoadsEnabled: LiveData<Boolean> = Transformations.map(_paths) {
+        it?.let {
+            it.list.isNotEmpty()
+        }
     }
 
     val undoMarkerEnabled : LiveData<Boolean> = Transformations.map(_markers) {
@@ -111,6 +122,15 @@ class MyViewModel @Inject constructor (
         addPath(path, animate)
     }
 
+    fun snapToRoads() {
+        val path = paths.value!!.list.last()
+        viewModelScope.launch {
+            val snappedPath = snapToRoads.getSnappedToRoadsPath(path)
+            addPath(snappedPath, animate = true, special = true)
+        }
+
+    }
+
     fun undoMarker() {
         val list = _markers.value!!.list.toMutableList()
         if(list.removeLastOrNull() != null) {
@@ -126,10 +146,10 @@ class MyViewModel @Inject constructor (
         }
     }
 
-    private fun addPath(path: List<LatLng>, animate: Boolean = false) {
+    private fun addPath(path: List<LatLng>, animate: Boolean = false, special: Boolean = false) {
         val list = _paths.value!!.list.toMutableList()
         list.add(path)
-        _paths.value = Resource(list, Status.ADDED_ELEMENT, animate = animate)
+        _paths.value = Resource(list, Status.ADDED_ELEMENT, animate = animate, special = special)
     }
 
     private fun addPaths(paths: List<List<LatLng>>, animate: Boolean = false) {
