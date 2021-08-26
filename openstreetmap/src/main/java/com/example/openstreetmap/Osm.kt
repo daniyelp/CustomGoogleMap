@@ -53,6 +53,7 @@ class Osm {
                  * In this case, we append auxPath to the paths of that already there City
                  * If this is not the case, we just add the new City instance to the cities list
                  */
+
                 fun updateOrAddCity() {
                     var city = cities.filter { city -> city.name == curCityName }.firstOrNull()
                     if(city == null) {

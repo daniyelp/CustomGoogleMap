@@ -59,15 +59,34 @@
 
             </LinearLayout>
 
-            <Button
-                android:id="@+id/button_snap_to_roads"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/color_action_button"
-                android:enabled="@{viewModel.snapToRoadsEnabled}"
-                android:onClick="@{() -> viewModel.snapToRoads()}"
-                app:tint="@color/color_action_button_text"
-                android:text="STR" />
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/button_snap_to_roads"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/color_action_button"
+                    android:enabled="@{viewModel.snapToRoadsEnabled}"
+                    android:onClick="@{() -> viewModel.snapToRoads()}"
+                    app:tint="@color/color_action_button_text"
+                    android:text="STR" />
+
+                <Button
+                    android:id="@+id/button_osm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/color_action_button"
+                    android:enabled="@{viewModel.osmEnabled}"
+                    android:onClick="@{() -> viewModel.osm()}"
+                    android:layout_marginLeft="8dp"
+                    app:tint="@color/color_action_button_text"
+                    android:text="OSM" />
+
+
+            </LinearLayout>
 
             <Button
                 android:id="@+id/button_undo_marker"
@@ -118,7 +137,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-        
+
         <com.example.custom_google_map.MapTypeSelector
             android:id="@+id/selector_map_type"
             android:layout_width="wrap_content"

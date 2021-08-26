@@ -6,6 +6,12 @@ import com.google.android.gms.maps.model.LatLng
 
 class OsmRepository(private val osmApi: OsmApi){
 
+    suspend fun getCityWithBoundary(latLng: LatLng) : Pair<String, List<LatLng>> {
+        val lat = latLng.latitude
+        val lon = latLng.longitude
+        return getCityWithBoundary(lat, lon)
+    }
+
     suspend fun getCityWithBoundary(lat: Double, lon: Double) : Pair<String, List<LatLng>> {
         var city: String? = null
         var latLngs: List<LatLng>? = null

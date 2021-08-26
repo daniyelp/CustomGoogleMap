@@ -2,12 +2,11 @@ package com.example.customgooglemapexample
 
 import android.view.animation.Transformation
 import androidx.lifecycle.*
-import com.example.customgooglemapexample.util.CombinedLiveData
-import com.example.customgooglemapexample.util.LocationTracker
-import com.example.customgooglemapexample.util.Resource
-import com.example.customgooglemapexample.util.Status
+import com.example.customgooglemapexample.util.*
 import com.example.gpsbroadcastreceiver.GpsBroadcastReceiver
 import com.example.internetbroadcastreceiver.InternetBroadcastReceiver
+import com.example.openstreetmap.City
+import com.example.openstreetmap.Osm
 import com.example.snap_to_roads.SnapToRoads
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +19,8 @@ class MyViewModel @Inject constructor (
     private val locationTracker: LocationTracker,
     private val gpsBroadcastReceiver: GpsBroadcastReceiver,
     private val internetBroadcastReceiver: InternetBroadcastReceiver,
-    private val snapToRoads: SnapToRoads
+    private val snapToRoads: SnapToRoads,
+    private val osm: Osm
     ): ViewModel() {
 
     val lastLocation : LiveData<LatLng> = locationTracker.lastLocation
@@ -35,6 +35,15 @@ class MyViewModel @Inject constructor (
 
     private val _zoomToFit = MutableLiveData<Boolean>(false)
     val zoomToFit : LiveData<Boolean> = _zoomToFit
+
+    private val _displayCityName = MutableLiveData<DisplayResource<String>>()
+    val displayCityName: LiveData<DisplayResource<String>> = _displayCityName
+
+    fun displayedCityName() {
+        _displayCityName.value?.let {
+            _displayCityName.value = DisplayResource(it.t, false)
+        }
+    }
 
     fun zoomToFit() {
         _zoomToFit.value = true
@@ -56,6 +65,12 @@ class MyViewModel @Inject constructor (
     }
 
     val snapToRoadsEnabled: LiveData<Boolean> = Transformations.map(_paths) {
+        it?.let {
+            it.list.isNotEmpty()
+        }
+    }
+
+    val osmEnabled: LiveData<Boolean> = Transformations.map(_markers) {
         it?.let {
             it.list.isNotEmpty()
         }
@@ -128,7 +143,16 @@ class MyViewModel @Inject constructor (
             val snappedPath = snapToRoads.getSnappedToRoadsPath(path)
             addPath(snappedPath, animate = true, special = true)
         }
+    }
 
+    fun osm() {
+        _markers.value!!.list.last().let { latLng ->
+            viewModelScope.launch {
+                val (city, boundary) = osm.getCityWithBoundary(latLng.latitude, latLng.longitude)
+                _displayCityName.value = DisplayResource(city, true)
+                addPath(boundary, animate = true, zoomToFit = true)
+            }
+        }
     }
 
     fun undoMarker() {
@@ -146,10 +170,10 @@ class MyViewModel @Inject constructor (
         }
     }
 
-    private fun addPath(path: List<LatLng>, animate: Boolean = false, special: Boolean = false) {
+    private fun addPath(path: List<LatLng>, animate: Boolean? = false, special: Boolean = false, zoomToFit: Boolean? = false) {
         val list = _paths.value!!.list.toMutableList()
         list.add(path)
-        _paths.value = Resource(list, Status.ADDED_ELEMENT, animate = animate, special = special)
+        _paths.value = Resource(list, Status.ADDED_ELEMENT, animate = animate, special = special, zoomToFit = zoomToFit)
     }
 
     private fun addPaths(paths: List<List<LatLng>>, animate: Boolean = false) {

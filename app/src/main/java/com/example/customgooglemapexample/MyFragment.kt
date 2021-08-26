@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -105,6 +106,11 @@ class MyFragment: Fragment() {
                     when(it.status) {
                         Status.ADDED_ELEMENT -> {
                             customGoogleMap.addPath(it.list.last(), if(it.special) Color.BLACK else Color.RED, it.animate ?: false)
+                            it.zoomToFit?.let { zoom ->
+                                if(zoom) {
+                                    customGoogleMap.zoomToFit(it.list.last(), animated = true)
+                                }
+                            }
                         }
                         Status.RESETED -> {
                             customGoogleMap.removePaths()
@@ -130,6 +136,17 @@ class MyFragment: Fragment() {
                     }
                 }
             })
+
+            displayCityName.observe(viewLifecycleOwner, Observer {
+                it?.let {
+                    if(it.display) {
+                        Toast.makeText(requireContext(), it.t, Toast.LENGTH_SHORT).show()
+                        viewModel.displayedCityName()
+                    }
+                }
+            })
+
+
 
         }
 

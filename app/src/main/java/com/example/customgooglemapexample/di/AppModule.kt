@@ -5,6 +5,7 @@ import com.example.customgooglemapexample.R
 import com.example.customgooglemapexample.util.LocationTracker
 import com.example.gpsbroadcastreceiver.GpsBroadcastReceiver
 import com.example.internetbroadcastreceiver.InternetBroadcastReceiver
+import com.example.openstreetmap.Osm
 import com.example.snap_to_roads.SnapToRoads
 import dagger.Module
 import dagger.Provides
@@ -40,6 +41,12 @@ object AppModule {
     fun provideSnapToRoads(@ApplicationContext context: Context) : SnapToRoads{
         val apiKey = context.resources.getString(R.string.google_maps_api_key)
         return SnapToRoads(apiKey)
+    }
+
+    @Singleton
+    @Provides
+    fun provideOsm() : Osm {
+        return Osm()
     }
 
     //below is very bad design
