@@ -1,6 +1,5 @@
 package com.example.customgooglemapexample
 
-import android.view.animation.Transformation
 import androidx.lifecycle.*
 import com.example.customgooglemapexample.util.*
 import com.example.gpsbroadcastreceiver.GpsBroadcastReceiver
@@ -11,7 +10,6 @@ import com.example.snap_to_roads.SnapToRoads
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -151,6 +149,23 @@ class MyViewModel @Inject constructor (
                 val (city, boundary) = osm.getCityWithBoundary(latLng.latitude, latLng.longitude)
                 _displayCityName.value = DisplayResource(city, true)
                 addPath(boundary, animate = true, zoomToFit = true)
+            }
+        }
+    }
+
+    //FIXME: the osm.splitOnCity seems not to work correctly
+    // for a specific example, it gave back two cities, as it should have,
+    // but there were duplicated paths for each city
+    fun split() {
+        val path = paths.value!!.list.last()
+        viewModelScope.launch {
+            val cities = osm.splitOnCity(listOf(path))
+            val paths = cities.map { it.paths }.flatten()
+            //we should replace the path, so firstly we should remove the last path from the map
+            undoPath()
+            //then we add back the path, but split
+            for ((index, path) in paths.withIndex()) {
+                addPath(path, true, index % 2 == 0)
             }
         }
     }

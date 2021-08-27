@@ -1,4 +1,4 @@
-    package com.example.customgooglemapexample.main
+package com.example.customgooglemapexample.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
