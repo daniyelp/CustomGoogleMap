@@ -30,39 +30,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-
-            <LinearLayout
+            <Button
+                android:id="@+id/button_connect"
+                android:onClick="@{() -> viewModel.connect(false)}"
+                android:enabled="@{viewModel.connectEnabled}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:drawableRight="@drawable/ic_path"
+                android:backgroundTint="@color/color_action_button"
+                app:tint="@color/color_action_button_text" />
 
-                <Button
-                    android:id="@+id/button_connect"
-                    android:onClick="@{() -> viewModel.connect(false)}"
-                    android:enabled="@{viewModel.connectEnabled}"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableRight="@drawable/ic_path"
-                    android:backgroundTint="@color/color_action_button"
-                    app:tint="@color/color_action_button_text" />
-
-                <Button
-                    android:id="@+id/button_connect_with_animation"
-                    android:onClick="@{() -> viewModel.connect(true)}"
-                    android:enabled="@{viewModel.connectEnabled}"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:drawableRight="@drawable/ic_animation"
-                    android:backgroundTint="@color/color_action_button"
-                    app:tint="@color/color_action_button_text" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/button_snap_to_roads"
@@ -81,12 +58,9 @@
                     android:backgroundTint="@color/color_action_button"
                     android:enabled="@{viewModel.osmEnabled}"
                     android:onClick="@{() -> viewModel.osm()}"
-                    android:layout_marginLeft="8dp"
                     app:tint="@color/color_action_button_text"
                     android:text="OSM" />
 
-
-            </LinearLayout>
 
             <Button
                 android:id="@+id/button_split"
@@ -119,16 +93,6 @@
                 app:tint="@color/color_action_button_text"
                 android:drawableLeft="@drawable/ic_undo"
                 android:text="path" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_zoom_to_fit"
-                android:onClick="@{() -> viewModel.zoomToFit()}"
-                android:enabled="@{viewModel.zoomToFitEnabled}"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableRight="@drawable/ic_zoom"
-                android:backgroundTint="@color/color_action_button"
-                app:tint="@color/color_action_button_text" />
 
             <Button
                 android:id="@+id/button_clear"

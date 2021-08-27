@@ -71,7 +71,7 @@ class MyFragment: Fragment() {
             gpsEnabled.observe(viewLifecycleOwner, Observer {
                 it?.let {
                     customGoogleMap.gpsOn = it
-                    Log.d("GPS", "gps status changed inside fragme")
+                    Log.d("GPS", "gps status changed inside fragment")
                 }
             })
 
@@ -128,15 +128,6 @@ class MyFragment: Fragment() {
                 }
             })
 
-            zoomToFit.observe(viewLifecycleOwner, Observer {
-                it?.let {
-                    if(it) {
-                        customGoogleMap.zoomToFit(markers.value!!.list, animated = true)
-                        viewModel.zoomToFitHandled()
-                    }
-                }
-            })
-
             displayCityName.observe(viewLifecycleOwner, Observer {
                 it?.let {
                     if(it.display) {
@@ -145,8 +136,6 @@ class MyFragment: Fragment() {
                     }
                 }
             })
-
-
 
         }
 

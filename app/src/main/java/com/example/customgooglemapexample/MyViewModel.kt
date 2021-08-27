@@ -4,7 +4,6 @@ import androidx.lifecycle.*
 import com.example.customgooglemapexample.util.*
 import com.example.gpsbroadcastreceiver.GpsBroadcastReceiver
 import com.example.internetbroadcastreceiver.InternetBroadcastReceiver
-import com.example.openstreetmap.City
 import com.example.openstreetmap.Osm
 import com.example.snap_to_roads.SnapToRoads
 import com.google.android.gms.maps.model.LatLng
@@ -43,14 +42,6 @@ class MyViewModel @Inject constructor (
         }
     }
 
-    fun zoomToFit() {
-        _zoomToFit.value = true
-    }
-
-    fun zoomToFitHandled() {
-        _zoomToFit.value = false
-    }
-
     private val startingIndexForPath = MutableLiveData(0)
 
     val connectEnabled : LiveData<Boolean> = CombinedLiveData(_markers, startingIndexForPath) {
@@ -83,12 +74,6 @@ class MyViewModel @Inject constructor (
     val undoPathEnabled : LiveData<Boolean> = Transformations.map(_paths) {
         it?.let {
             it.list.isNotEmpty()
-        }
-    }
-
-    val zoomToFitEnabled : LiveData<Boolean> = Transformations.map(_markers) {
-        it?.let {
-            it.list.size >= 2
         }
     }
 
