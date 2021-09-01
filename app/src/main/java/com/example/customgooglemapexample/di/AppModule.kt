@@ -55,7 +55,4 @@ object AppModule {
     fun provideApiKey(@ApplicationContext context: Context) : String {
         return context.resources.getString(R.string.google_maps_api_key)
     }*/
-
-
-
 }

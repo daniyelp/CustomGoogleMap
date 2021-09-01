@@ -45,6 +45,15 @@ class Osm {
             var (curCityName, curBoundary) = osmRepository.getCityWithBoundary(firstLatLng.latitude, firstLatLng.longitude)
             var auxPath = mutableListOf(firstLatLng)
 
+            fun updateOrAddCity() {
+                var city = cities.filter { city -> city.name == curCityName }.firstOrNull()
+                if(city == null) {
+                    cities.add(City(curCityName, mutableListOf(auxPath), curBoundary))
+                } else {
+                    city.paths.add(auxPath)
+                }
+            }
+
             for(latLng in curPath.subList(1, curPath.size)) {
 
                 /**
@@ -53,15 +62,6 @@ class Osm {
                  * In this case, we append auxPath to the paths of that already there City
                  * If this is not the case, we just add the new City instance to the cities list
                  */
-
-                fun updateOrAddCity() {
-                    var city = cities.filter { city -> city.name == curCityName }.firstOrNull()
-                    if(city == null) {
-                        cities.add(City(curCityName, mutableListOf(auxPath), curBoundary))
-                    } else {
-                        city.paths.add(auxPath)
-                    }
-                }
 
                 if(PolyUtil.containsLocation(latLng, curBoundary, true)) {
                     auxPath.add(latLng)
@@ -76,9 +76,8 @@ class Osm {
                     }
 
                 }
-
-                updateOrAddCity()
             }
+            updateOrAddCity()
         }
 
         return cities
