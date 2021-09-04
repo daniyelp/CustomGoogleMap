@@ -201,11 +201,11 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
         init {
             googleMap.setOnCameraMoveStartedListener {
                 if(it == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
-                    myLocationButton.decenter()
+                    myLocationButton?.decenter()
                 }
             }
 
-            myLocationButton.onCenter = {
+            myLocationButton?.onCenter = {
                 updateCamera()
             }
 
@@ -219,10 +219,10 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
         private fun updateStatusLine() {
             Log.d("STATUS_CONTROLLER", "updateLine with primary status ${statusController.primaryStatus}")
             when(statusController.primaryStatus) {
-                StatusController.PrimaryStatus.INTERNET_OFF -> primaryStatusLine.instant("INTERNET IS OFF", Color.GRAY, true)
-                StatusController.PrimaryStatus.GPS_OFF -> primaryStatusLine.instant("GPS IS OFF", Color.RED, true)
-                StatusController.PrimaryStatus.ACQUIRING_LOCATION -> primaryStatusLine.instant("ACQUIRING LOCATION", Color.BLUE, true)
-                StatusController.PrimaryStatus.LOCATION_RETRIEVED -> primaryStatusLine.instant("LOCATION ACQUIRED", Color.GREEN, false)
+                StatusController.PrimaryStatus.INTERNET_OFF -> primaryStatusLine?.instant("INTERNET IS OFF", Color.GRAY, true)
+                StatusController.PrimaryStatus.GPS_OFF -> primaryStatusLine?.instant("GPS IS OFF", Color.RED, true)
+                StatusController.PrimaryStatus.ACQUIRING_LOCATION -> primaryStatusLine?.instant("ACQUIRING LOCATION", Color.BLUE, true)
+                StatusController.PrimaryStatus.LOCATION_RETRIEVED -> primaryStatusLine?.instant("LOCATION ACQUIRED", Color.GREEN, false)
                 else -> {}
             }
         }
@@ -257,7 +257,7 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
                 return
             }
 
-            if(myLocationButton.center) {
+            if(myLocationButton?.center == true) {
                 zoomTo(lastLatLng!!, true)
             }
         }
@@ -345,12 +345,18 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
             }
         }
 
+        @JvmName("zoomToFit1")
         fun zoomToFit(path: List<LatLng>, animated: Boolean = false) {
             if(animated) {
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(getBoundsToFit(path), 20))
             } else {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(getBoundsToFit(path), 20))
             }
+        }
+
+        fun zoomToFit(paths: List<List<LatLng>>, animated: Boolean = false) {
+            val pathsFlattened = paths.flatten()
+            zoomToFit(pathsFlattened, animated)
         }
 
         fun zoomTo(latLng: LatLng, animated: Boolean = false) {
@@ -364,10 +370,10 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
     }
 
     private lateinit var customGoogleMap: CustomGoogleMap
-    //the two below should be set by the class who uses this custom view
-    lateinit var myLocationButton: MyLocationButton
-    lateinit var primaryStatusLine: PrimaryStatusLine
-    lateinit var mapTypeSelector: MapTypeSelector
+
+    var myLocationButton: MyLocationButton? = null
+    var primaryStatusLine: PrimaryStatusLine? = null
+    var mapTypeSelector: MapTypeSelector? = null
 
     init {
         inflate(context, R.layout.map_view_custom, this)
