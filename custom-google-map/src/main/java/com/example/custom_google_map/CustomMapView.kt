@@ -3,6 +3,7 @@ package com.example.custom_google_map
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Point
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -233,22 +234,29 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
                 return
             }
 
-            //delete last marker
-            locationMarker?.remove()
-
-            //create a new marker at lastLatLng and with the color based on tracking
-            val markerOptions = MarkerOptions()
-                //.flat(true)
-                .position(lastLatLng!!)
-                .icon(vectorToBitmap(
+            if(locationMarker == null) {
+                val icon = vectorToBitmapDescriptor(
                     R.drawable.ic_location,
-                    when(statusController.primaryStatus) {
+                    when (statusController.primaryStatus) {
                         StatusController.PrimaryStatus.LOCATION_RETRIEVED -> Color.BLUE
                         else -> Color.LTGRAY
                     },
-                    resources))
+                    resources
+                )
 
-            locationMarker = googleMap.addMarker(markerOptions)
+                val position = lastLatLng!!
+
+                //create a new marker at lastLatLng and with the color based on tracking
+                val markerOptions = MarkerOptions()
+                    .anchor(0.5f, 0.5f)
+                    .position(position)
+                    .icon(icon)
+
+                locationMarker = googleMap.addMarker(markerOptions)
+
+            } else {
+                animateMarker(locationMarker!!, lastLatLng!!)
+            }
 
         }
 
@@ -308,22 +316,32 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
 
         private var polylines = mutableListOf<AnimatedPolyline>()
 
-        fun addPath(path: List<LatLng>, color: Int, animated: Boolean = false) {
+        fun getDefaultPolylineOptions() = PolylineOptions()
+            .color(Color.BLACK)
+            .startCap(RoundCap())
+            .endCap(RoundCap())
+
+        fun addPath(
+            path: List<LatLng>,
+            animated: Boolean = false,
+            polylineOptions: PolylineOptions = getDefaultPolylineOptions()
+        ) {
+
             if(path.size in listOf(0, 1))
                 return
 
             val polyline = AnimatedPolyline(
                 googleMap,
                 path,
-                PolylineOptions().color(color),
+                polylineOptions,
                 if(animated) 1000 else 0
             ).also { it.start() }
             polylines.add(polyline)
         }
 
-        fun addPaths(paths: List<List<LatLng>>, color: Int, animated: Boolean = false) {
+        fun addPaths(paths: List<List<LatLng>>, animated: Boolean = false, polylineOptions: PolylineOptions = getDefaultPolylineOptions()) {
             paths.forEach {
-                addPath(it, color, animated)
+                addPath(it, animated, polylineOptions)
             }
         }
 
@@ -344,6 +362,11 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
                 f(it)
             }
         }
+        fun setOnMapClickListener(f : (latLng: LatLng) -> Unit) {
+            googleMap.setOnMapClickListener {
+                f(it)
+            }
+        }
 
         @JvmName("zoomToFit1")
         fun zoomToFit(path: List<LatLng>, animated: Boolean = false) {
@@ -359,9 +382,23 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
             zoomToFit(pathsFlattened, animated)
         }
 
+        private var zooming = false
         fun zoomTo(latLng: LatLng, animated: Boolean = false) {
             if(animated) {
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+                if(!zooming) {
+                    zooming = true
+                    googleMap.animateCamera(
+                        CameraUpdateFactory.newLatLngZoom(latLng, 16f),
+                        object : GoogleMap.CancelableCallback {
+                            override fun onFinish() {
+                                zooming = false
+                            }
+                            override fun onCancel() {
+                                zooming = false
+                            }
+                        }
+                    )
+                }
             } else {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
             }

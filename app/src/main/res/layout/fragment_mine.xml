@@ -20,89 +20,13 @@
             android:layout_height="match_parent"
             app:myLocationButtonPosition="top_right"/>
 
-
-        <LinearLayout
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/view_compose_mine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="right"
-            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <Button
-                android:id="@+id/button_connect"
-                android:onClick="@{() -> viewModel.connect(false)}"
-                android:enabled="@{viewModel.connectEnabled}"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableRight="@drawable/ic_path"
-                android:backgroundTint="@color/color_action_button"
-                app:tint="@color/color_action_button_text" />
-
-
-                <Button
-                    android:id="@+id/button_snap_to_roads"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/color_action_button"
-                    android:enabled="@{viewModel.snapToRoadsEnabled}"
-                    android:onClick="@{() -> viewModel.snapToRoads()}"
-                    app:tint="@color/color_action_button_text"
-                    android:text="STR" />
-
-                <Button
-                    android:id="@+id/button_osm"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/color_action_button"
-                    android:enabled="@{viewModel.osmEnabled}"
-                    android:onClick="@{() -> viewModel.osm()}"
-                    app:tint="@color/color_action_button_text"
-                    android:text="OSM" />
-
-
-            <Button
-                android:id="@+id/button_split"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/color_action_button"
-                android:layout_marginLeft="8dp"
-                android:onClick="@{() -> viewModel.split()}"
-                app:tint="@color/color_action_button_text"
-                android:text="SPLIT" />
-
-            <Button
-                android:id="@+id/button_undo_marker"
-                android:enabled="@{viewModel.undoMarkerEnabled}"
-                android:onClick="@{() -> viewModel.undoMarker()}"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/color_action_button"
-                app:tint="@color/color_action_button_text"
-                android:drawableLeft="@drawable/ic_undo"
-                android:text="marker" />
-
-            <Button
-                android:id="@+id/button_undo_path"
-                android:enabled="@{viewModel.undoPathEnabled}"
-                android:onClick="@{() -> viewModel.undoPath()}"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/color_action_button"
-                app:tint="@color/color_action_button_text"
-                android:drawableLeft="@drawable/ic_undo"
-                android:text="path" />
-
-            <Button
-                android:id="@+id/button_clear"
-                android:onClick="@{() -> viewModel.reset()}"
-                android:layout_width="wrap_content"
-                android:backgroundTint="@color/color_action_button"
-                app:tint="@color/color_action_button_text"
-                android:layout_height="wrap_content"
-                android:drawableRight="@drawable/ic_clear" />
-        </LinearLayout>
+            app:layout_constraintTop_toBottomOf="@+id/selector_map_type" />
 
         <com.example.custom_google_map.PrimaryStatusLine
             android:layout_margin="8dp"
