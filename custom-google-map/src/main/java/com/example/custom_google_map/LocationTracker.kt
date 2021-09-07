@@ -1,4 +1,4 @@
-package com.example.customgooglemapexample.util
+package com.example.custom_google_map
 
 import android.Manifest
 import android.content.Context

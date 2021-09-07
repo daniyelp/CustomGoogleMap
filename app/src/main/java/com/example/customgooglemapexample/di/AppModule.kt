@@ -2,7 +2,8 @@ package com.example.customgooglemapexample.di
 
 import android.content.Context
 import com.example.customgooglemapexample.R
-import com.example.customgooglemapexample.util.LocationTracker
+import com.example.custom_google_map.LocationTracker
+import com.example.custom_google_map.MockLocationTracker
 import com.example.gpsbroadcastreceiver.GpsBroadcastReceiver
 import com.example.internetbroadcastreceiver.InternetBroadcastReceiver
 import com.example.openstreetmap.Osm
@@ -49,10 +50,9 @@ object AppModule {
         return Osm()
     }
 
-    //below is very bad design
-    /*@Singleton
+    @Singleton
     @Provides
-    fun provideApiKey(@ApplicationContext context: Context) : String {
-        return context.resources.getString(R.string.google_maps_api_key)
-    }*/
+    fun provideMockLocationTracker() : MockLocationTracker {
+        return MockLocationTracker()
+    }
 }

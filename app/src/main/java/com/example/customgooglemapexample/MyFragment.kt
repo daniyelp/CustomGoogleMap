@@ -187,7 +187,7 @@ class MyFragment: Fragment() {
                 viewModel.onNewMarker(latLng)
             }
             customGoogleMap.setOnMapLongClickListener { latLng ->
-                viewModel.onNewMockLocation(latLng)
+                viewModel.onNewLocation(latLng)
             }
             view_compose_mine.setContent {
                 Buttons(viewModel)
@@ -198,13 +198,7 @@ class MyFragment: Fragment() {
     private fun subscribeToObservers() {
         with(viewModel) {
 
-            /*lastLocation.observe(viewLifecycleOwner, Observer {
-                it?.let {
-                    customGoogleMap.newLatLng(it)
-                }
-            })*/
-
-            lastMockLocation.observe(viewLifecycleOwner, Observer {
+            lastLocation.observe(viewLifecycleOwner, Observer {
                 it?.let {
                     customGoogleMap.newLatLng(it)
                 }
@@ -291,8 +285,6 @@ class MyFragment: Fragment() {
         }
 
     }
-
-    //map does nothing without these below
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
