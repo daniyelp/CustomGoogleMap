@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,12 +17,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -31,12 +27,10 @@ import androidx.lifecycle.Observer
 import com.example.custom_google_map.CustomMapView
 import com.example.customgooglemapexample.databinding.FragmentMineBinding
 import com.example.customgooglemapexample.util.Status
-import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_mine.*
-import kotlinx.coroutines.delay
-import kotlin.concurrent.thread
 
+@ExperimentalAnimationApi
 @AndroidEntryPoint
 class MyFragment: Fragment() {
 
@@ -177,7 +171,7 @@ class MyFragment: Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         map_custom.myLocationButton = button_my_location
-        map_custom.primaryStatusLine = line_primary_status
+        map_custom.statusBar = line_primary_status
         map_custom.mapTypeSelector = selector_map_type
         map_custom.getCustomMapAsync {
             customGoogleMap = it

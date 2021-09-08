@@ -2,13 +2,12 @@ package com.example.custom_google_map
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.Point
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -18,6 +17,7 @@ import kotlinx.android.synthetic.main.map_view_custom.view.*
 import java.util.*
 
 
+@ExperimentalAnimationApi
 class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayout(context, attributes) {
 
     private class StatusController(private val onStatusChange: () -> Unit) {
@@ -200,6 +200,10 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
             }
 
         init {
+            googleMap.uiSettings.isCompassEnabled = false
+            googleMap.uiSettings.isMyLocationButtonEnabled = false
+            googleMap.uiSettings.isMapToolbarEnabled = false
+
             googleMap.setOnCameraMoveStartedListener {
                 if(it == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
                     myLocationButton?.decenter()
@@ -217,13 +221,14 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
 
         }
 
+        @ExperimentalAnimationApi
         private fun updateStatusLine() {
             Log.d("STATUS_CONTROLLER", "updateLine with primary status ${statusController.primaryStatus}")
             when(statusController.primaryStatus) {
-                StatusController.PrimaryStatus.INTERNET_OFF -> primaryStatusLine?.instant("INTERNET IS OFF", Color.GRAY, true)
-                StatusController.PrimaryStatus.GPS_OFF -> primaryStatusLine?.instant("GPS IS OFF", Color.RED, true)
-                StatusController.PrimaryStatus.ACQUIRING_LOCATION -> primaryStatusLine?.instant("ACQUIRING LOCATION", Color.BLUE, true)
-                StatusController.PrimaryStatus.LOCATION_RETRIEVED -> primaryStatusLine?.instant("LOCATION ACQUIRED", Color.GREEN, false)
+                StatusController.PrimaryStatus.INTERNET_OFF -> statusBar?.display("INTERNET IS OFF", R.color.gray, true)
+                StatusController.PrimaryStatus.GPS_OFF -> statusBar?.display("GPS IS OFF", R.color.red, true)
+                StatusController.PrimaryStatus.ACQUIRING_LOCATION -> statusBar?.display("ACQUIRING LOCATION", R.color.blue, true)
+                StatusController.PrimaryStatus.LOCATION_RETRIEVED -> statusBar?.display("LOCATION ACQUIRED", R.color.green, false)
                 else -> {}
             }
         }
@@ -238,8 +243,8 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
                 val icon = vectorToBitmapDescriptor(
                     R.drawable.ic_location,
                     when (statusController.primaryStatus) {
-                        StatusController.PrimaryStatus.LOCATION_RETRIEVED -> Color.BLUE
-                        else -> Color.LTGRAY
+                        StatusController.PrimaryStatus.LOCATION_RETRIEVED -> android.graphics.Color.BLUE
+                        else -> android.graphics.Color.LTGRAY
                     },
                     resources
                 )
@@ -317,7 +322,7 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
         private var polylines = mutableListOf<AnimatedPolyline>()
 
         fun getDefaultPolylineOptions() = PolylineOptions()
-            .color(Color.BLACK)
+            .color(android.graphics.Color.BLACK)
             .startCap(RoundCap())
             .endCap(RoundCap())
 
@@ -409,7 +414,7 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
     private lateinit var customGoogleMap: CustomGoogleMap
 
     var myLocationButton: MyLocationButton? = null
-    var primaryStatusLine: PrimaryStatusLine? = null
+    var statusBar: StatusBar? = null
     var mapTypeSelector: MapTypeSelector? = null
 
     init {

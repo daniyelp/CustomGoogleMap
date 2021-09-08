@@ -28,8 +28,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/selector_map_type" />
 
-        <com.example.custom_google_map.PrimaryStatusLine
-            android:layout_margin="8dp"
+        <com.example.custom_google_map.StatusBar
             android:id="@+id/line_primary_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -40,12 +39,11 @@
             android:id="@+id/selector_map_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/line_primary_status" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="60dp"/>
 
         <com.example.custom_google_map.MyLocationButton
-            android:layout_margin="8dp"
             android:id="@+id/button_my_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

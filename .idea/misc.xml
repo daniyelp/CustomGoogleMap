@@ -13,6 +13,8 @@
         <entry key="..\:/Users/jhjbhbjjbkjkjkjb/AndroidStudioProjects/CustomGoogleMapExample/custom-google-map/src/main/res/drawable/ic_my_location_black.xml" value="0.18072916666666666" />
         <entry key="..\:/Users/jhjbhbjjbkjkjkjb/AndroidStudioProjects/CustomGoogleMapExample/custom-google-map/src/main/res/drawable/ic_my_location_blue.xml" value="0.18072916666666666" />
         <entry key="..\:/Users/jhjbhbjjbkjkjkjb/AndroidStudioProjects/CustomGoogleMapExample/custom-google-map/src/main/res/layout/button_my_location.xml" value="0.2" />
+        <entry key="..\:/Users/jhjbhbjjbkjkjkjb/AndroidStudioProjects/CustomGoogleMapExample/custom-google-map/src/main/res/layout/map_view_custom.xml" value="0.2" />
+        <entry key="..\:/Users/jhjbhbjjbkjkjkjb/AndroidStudioProjects/CustomGoogleMapExample/custom-google-map/src/main/res/layout/selector_map_type.xml" value="0.2" />
       </map>
     </option>
   </component>
