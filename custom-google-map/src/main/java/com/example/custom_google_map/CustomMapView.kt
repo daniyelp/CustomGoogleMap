@@ -235,32 +235,40 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
 
         private fun updateMarker() {
 
+            fun getIcon(color: Int) = vectorToBitmapDescriptor(
+                R.drawable.ic_location,
+                color,
+                resources
+            )
+
+            fun updateMarkerColor(marker: Marker, color: Int) {
+                marker.setIcon(getIcon(color))
+            }
+
+            fun getColor() = when (statusController.primaryStatus) {
+                StatusController.PrimaryStatus.LOCATION_RETRIEVED -> android.graphics.Color.BLUE
+                else -> android.graphics.Color.LTGRAY
+            }
+
+            fun getPosition() = lastLatLng!!
+
             if(lastLatLng == null) {
                 return
             }
 
             if(locationMarker == null) {
-                val icon = vectorToBitmapDescriptor(
-                    R.drawable.ic_location,
-                    when (statusController.primaryStatus) {
-                        StatusController.PrimaryStatus.LOCATION_RETRIEVED -> android.graphics.Color.BLUE
-                        else -> android.graphics.Color.LTGRAY
-                    },
-                    resources
-                )
-
-                val position = lastLatLng!!
 
                 //create a new marker at lastLatLng and with the color based on tracking
                 val markerOptions = MarkerOptions()
                     .anchor(0.5f, 0.5f)
-                    .position(position)
-                    .icon(icon)
+                    .position(getPosition())
+                    .icon(getIcon(getColor()))
 
                 locationMarker = googleMap.addMarker(markerOptions)
 
             } else {
-                animateMarker(locationMarker!!, lastLatLng!!)
+                updateMarkerColor(locationMarker!!, getColor())
+                animateMarker(locationMarker!!, getPosition())
             }
 
         }
