@@ -8,6 +8,7 @@ import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.ui.graphics.Color
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -184,7 +185,7 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
 
                 statusController.newLocationAvailable()
                 updateCamera()
-                updateMarker()
+                updateLocationMarker()
             }
 
         var gpsOn: Boolean = false
@@ -215,7 +216,7 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
             }
 
             statusController = StatusController {
-                updateMarker()
+                updateLocationMarker()
                 updateStatusLine()
             }
 
@@ -233,7 +234,7 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
             }
         }
 
-        private fun updateMarker() {
+        private fun updateLocationMarker() {
 
             fun getIcon(color: Int) = vectorToBitmapDescriptor(
                 R.drawable.ic_location,
@@ -283,10 +284,6 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
             }
         }
 
-        fun newLatLng(latLng: LatLng) {
-            lastLatLng = latLng
-        }
-
         private fun getBoundsToFit(path: List<LatLng>) : LatLngBounds {
             val boundsBuilder = LatLngBounds.builder()
             for (latLng in path) {
@@ -295,53 +292,23 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
             return boundsBuilder.build()
         }
 
+        fun newLatLng(latLng: LatLng) {
+            lastLatLng = latLng
+        }
+
         fun onSnapshotReady(onSnapshotReadyCallback : (Bitmap) -> Unit) {
             googleMap.snapshot {
                 onSnapshotReadyCallback(it)
             }
         }
 
-        private var markers = mutableListOf<Marker>()
-
-        fun addAsMarker(latLng: LatLng) {
-            val marker = googleMap.addMarker(MarkerOptions()
-                .position(latLng)
-                .icon(BitmapDescriptorFactory.defaultMarker((markers.size * 10).toFloat() % 360)))
-                .also { it.showInfoWindow()}
-            markers.add(marker)
-        }
-
-        fun addAsMarkers(latLngs: List<LatLng>) {
-            latLngs.forEach {
-                addAsMarker(it)
-            }
-        }
-
-        fun removeMarkers() {
-            markers.forEach{it.remove()}
-            markers = mutableListOf()
-        }
-
-        fun removeLastMarkerIfAny() {
-            var marker = markers.removeLastOrNull()
-            marker?.remove()
-        }
-
-        private var polylines = mutableListOf<AnimatedPolyline>()
-
-        fun getDefaultPolylineOptions() = PolylineOptions()
-            .color(android.graphics.Color.BLACK)
-            .startCap(RoundCap())
-            .endCap(RoundCap())
+        fun addMarker(markerOptions: MarkerOptions) = googleMap.addMarker(markerOptions)
 
         fun addPath(
             path: List<LatLng>,
             animated: Boolean = false,
             polylineOptions: PolylineOptions = getDefaultPolylineOptions()
-        ) {
-
-            if(path.size in listOf(0, 1))
-                return
+        ): AnimatedPolyline {
 
             val polyline = AnimatedPolyline(
                 googleMap,
@@ -349,26 +316,20 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
                 polylineOptions,
                 if(animated) 1000 else 0
             ).also { it.start() }
-            polylines.add(polyline)
+
+            return polyline
         }
 
-        fun addPaths(paths: List<List<LatLng>>, animated: Boolean = false, polylineOptions: PolylineOptions = getDefaultPolylineOptions()) {
-            paths.forEach {
-                addPath(it, animated, polylineOptions)
-            }
-        }
+        fun getDefaultPolylineOptions() = PolylineOptions()
+            .color(android.graphics.Color.BLACK)
+            .startCap(RoundCap())
+            .endCap(RoundCap())
 
-        fun removePaths() {
-            polylines.forEach {
-                it.remove()
-            }
-            polylines = mutableListOf()
-        }
-
-        fun removeLastPath() {
-            val polyline = polylines.removeLastOrNull()
-            polyline?.remove()
-        }
+        fun addPaths(
+            paths: List<List<LatLng>>,
+            animated: Boolean = false,
+            polylineOptions: PolylineOptions = getDefaultPolylineOptions()
+        ): List<AnimatedPolyline> = paths.map { addPath(it, animated, polylineOptions) }
 
         fun setOnMapLongClickListener(f : (latLng: LatLng) -> Unit) {
             googleMap.setOnMapLongClickListener {

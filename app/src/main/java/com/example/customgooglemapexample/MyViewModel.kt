@@ -64,6 +64,18 @@ class MyViewModel @Inject constructor (
             }
     }
 
+    val addStartMarkerEnabled : LiveData<Boolean> = Transformations.map(_paths) {
+        it?.let {
+            it.list.isNotEmpty()
+        }
+    }
+
+    val addFinishMarkerEnabled : LiveData<Boolean> = Transformations.map(_paths) {
+        it?.let {
+            it.list.isNotEmpty()
+        }
+    }
+
     val snapToRoadsEnabled: LiveData<Boolean> = Transformations.map(_paths) {
         it?.let {
             it.list.isNotEmpty()
@@ -76,6 +88,11 @@ class MyViewModel @Inject constructor (
         }
     }
 
+    val splitEnabled : LiveData<Boolean> = Transformations.map(_paths) {
+        it?.let {
+            it.list.isNotEmpty()
+        }
+    }
     val undoMarkerEnabled : LiveData<Boolean> = Transformations.map(_markers) {
         it?.let {
             it.list.isNotEmpty()
@@ -106,9 +123,15 @@ class MyViewModel @Inject constructor (
     }
 
     fun onNewMarker(latLng: LatLng) {
-        val list = _markers.value!!.list.toMutableList()
-        list.add(latLng)
-        _markers.value = Resource(list, Status.ADDED_ELEMENT)
+        addMarker(latLng)
+    }
+
+    fun onNewStartMarker() {
+        addMarker(latLng = paths.value!!.list.last().first(), amSpecialLevel = 2)
+    }
+
+    fun onNewFinishMarker() {
+        addMarker(latLng = paths.value!!.list.last().last(), amSpecialLevel = 3)
     }
 
     fun undoAllMarkers() {
@@ -150,7 +173,7 @@ class MyViewModel @Inject constructor (
         val path = paths.value!!.list.last()
         viewModelScope.launch {
             val snappedPath = snapToRoads.getSnappedToRoadsPath(path)
-            addPath(snappedPath, animate = true, special = true)
+            addPath(snappedPath, animate = true, amSpecialLevel = 1)
         }
     }
 
@@ -159,14 +182,11 @@ class MyViewModel @Inject constructor (
             viewModelScope.launch {
                 val (city, boundary) = osm.getCityWithBoundary(latLng.latitude, latLng.longitude)
                 _displayCityName.value = DisplayResource(city, true)
-                addPath(boundary, animate = true, zoomToFit = true)
+                addPath(boundary, animate = true, amSpecialLevel = 1, zoomToFit = true)
             }
         }
     }
 
-    //FIXME: the osm.splitOnCity seems not to work correctly
-    // for a specific example, it gave back two cities, as it should have,
-    // but there were duplicated paths for each city
     fun split() {
         val path = paths.value!!.list.last()
         viewModelScope.launch {
@@ -176,7 +196,7 @@ class MyViewModel @Inject constructor (
             undoPath()
             //then we add back the path, but split
             for ((index, path) in paths.withIndex()) {
-                addPath(path, true, index % 2 == 0)
+                addPath(path, true, index % 2)
             }
         }
     }
@@ -196,10 +216,16 @@ class MyViewModel @Inject constructor (
         }
     }
 
-    private fun addPath(path: List<LatLng>, animate: Boolean? = false, special: Boolean = false, zoomToFit: Boolean? = false) {
+    private fun addMarker(latLng: LatLng, amSpecialLevel: Int = 0) {
+        val list = _markers.value!!.list.toMutableList()
+        list.add(latLng)
+        _markers.value = Resource(list, Status.ADDED_ELEMENT, amSpecialLevel = amSpecialLevel)
+    }
+
+    private fun addPath(path: List<LatLng>, animate: Boolean? = false, amSpecialLevel: Int = 0, zoomToFit: Boolean? = false) {
         val list = _paths.value!!.list.toMutableList()
         list.add(path)
-        _paths.value = Resource(list, Status.ADDED_ELEMENT, animate = animate, special = special, zoomToFit = zoomToFit)
+        _paths.value = Resource(list, Status.ADDED_ELEMENT, animate = animate, amSpecialLevel = amSpecialLevel, zoomToFit = zoomToFit)
     }
 
     private fun addPaths(paths: List<List<LatLng>>, animate: Boolean = false) {

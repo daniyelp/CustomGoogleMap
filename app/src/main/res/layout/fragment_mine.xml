@@ -24,9 +24,8 @@
             android:id="@+id/view_compose_mine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/selector_map_type" />
+            app:layout_constraintBottom_toTopOf="@+id/button_my_location"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <com.example.custom_google_map.StatusBar
             android:id="@+id/line_primary_status"

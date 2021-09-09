@@ -17,7 +17,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.databinding.DataBindingUtil
@@ -25,9 +27,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.example.custom_google_map.CustomMapView
+import com.example.custom_google_map.vectorToBitmapDescriptor
 import com.example.customgooglemapexample.databinding.FragmentMineBinding
 import com.example.customgooglemapexample.util.Status
+import com.google.android.gms.maps.model.*
 import dagger.hilt.android.AndroidEntryPoint
+import de.p72b.maps.animation.AnimatedPolyline
 import kotlinx.android.synthetic.main.fragment_mine.*
 
 @ExperimentalAnimationApi
@@ -58,34 +63,44 @@ class MyFragment: Fragment() {
         return binding.root
     }
 
-    //@Preview
     @Composable
     fun Buttons(viewModel: MyViewModel) {
 
         val connectEnabled by viewModel.connectEnabled.observeAsState(false)
         val connect2Enabled by viewModel.connect2Enabled.observeAsState(false)
+        val addStartMarkerEnabled by viewModel.addStartMarkerEnabled.observeAsState(false)
+        val addFinishMarkerEnabled by viewModel.addFinishMarkerEnabled.observeAsState(false)
         val snapToRoadsEnabled by viewModel.snapToRoadsEnabled.observeAsState(false)
         val osmEnabled by viewModel.osmEnabled.observeAsState(false)
+        val splitEnabled by viewModel.splitEnabled.observeAsState(false)
 
         val undoMarkerEnabled by viewModel.undoMarkerEnabled.observeAsState(false)
         val undoPathEnabled by viewModel.undoPathEnabled.observeAsState(false)
 
+
         Card(
             modifier = Modifier
-                .padding(8.dp)
-                .height(200.dp),
+                .padding(8.dp),
             elevation = 0.dp,
-            shape = RoundedCornerShape(3),
-            backgroundColor = Color.Gray.copy(alpha = 0.3f)
-        ){
-            Card(
-                modifier = Modifier
-                    .padding(8.dp),
-                elevation = 0.dp,
-                backgroundColor = Color.Gray.copy(alpha = 0.0f)
+            backgroundColor = Color.Gray.copy(alpha = 0.0f)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
+
+                Divider(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50))
+                        .width(60.dp),
+                    color = Color.Black,
+                    thickness = 3
+                        .dp,
+                )
+
                 Column(
                     modifier = Modifier
+                        .height(200.dp)
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -124,6 +139,35 @@ class MyFragment: Fragment() {
                         Text(text = "+")
                     }
                     Button(
+                        onClick = { viewModel.onNewStartMarker() },
+                        enabled = addStartMarkerEnabled,
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = colorResource(id = R.color.green)
+                        )
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_flag),
+                            contentDescription = "start",
+                            modifier = Modifier
+                                .size(20.dp)
+                        )
+                    }
+                    Button(
+                        onClick = { viewModel.onNewFinishMarker() },
+                        enabled = addFinishMarkerEnabled,
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = colorResource(id = R.color.red)
+                        )
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_flag),
+                            contentDescription = "finish",
+                            modifier = Modifier
+                                .size(20.dp)
+                        )
+                    }
+
+                    Button(
                         onClick = { viewModel.snapToRoads() },
                         enabled = snapToRoadsEnabled
                     ) {
@@ -137,6 +181,7 @@ class MyFragment: Fragment() {
                     }
                     Button(
                         onClick = { viewModel.split() },
+                        enabled = splitEnabled
                     ) {
                         Text("SPLIT")
                     }
@@ -165,9 +210,19 @@ class MyFragment: Fragment() {
                         Text("PATH")
                     }
                 }
+
+                Divider(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50))
+                        .width(60.dp),
+                    color = Color.Black,
+                    thickness = 3.dp
+                )
             }
+
         }
     }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         map_custom.myLocationButton = button_my_location
@@ -188,6 +243,9 @@ class MyFragment: Fragment() {
             }
         }
     }
+
+    private val _markers = mutableListOf<Marker>()
+    private val _paths = mutableListOf<AnimatedPolyline>()
 
     private fun subscribeToObservers() {
         with(viewModel) {
@@ -216,13 +274,28 @@ class MyFragment: Fragment() {
                 it?.let {
                     when (it.status) {
                         Status.RESETED -> {
-                            customGoogleMap.removeMarkers()
+                            _markers.forEach { it.remove() }
+                            _markers.clear()
                         }
                         Status.ADDED_ELEMENT -> {
-                            customGoogleMap.addAsMarker(it.list.last())
+                            _markers.add(customGoogleMap.addMarker(
+                                MarkerOptions()
+                                    .position(it.list.last())
+                                    .icon(
+                                        if(it.amSpecialLevel == 0)
+                                            BitmapDescriptorFactory.defaultMarker((_markers.size * 10).toFloat() % 360)
+                                         else if (it.amSpecialLevel == 2)
+                                            BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                                        else if (it.amSpecialLevel == 3)
+                                            BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
+                                        else
+                                            BitmapDescriptorFactory.defaultMarker((_markers.size * 10).toFloat() % 360)
+
+                                    )
+                            ))
                         }
                         Status.REMOVED_LAST_ELEMENT -> {
-                            customGoogleMap.removeLastMarkerIfAny()
+                            _markers.removeLast().remove()
                         }
                         else -> {
 
@@ -236,11 +309,11 @@ class MyFragment: Fragment() {
                     when(it.status) {
                         Status.ADDED_ELEMENT -> {
                             Log.d("PATH", it.list.last().toString())
-                            customGoogleMap.addPath(
+                            _paths.add(customGoogleMap.addPath(
                                 it.list.last(),
                                 it.animate ?: false,
-                                customGoogleMap.getDefaultPolylineOptions().color(if(it.special) android.graphics.Color.BLACK else android.graphics.Color.RED)
-                            )
+                                customGoogleMap.getDefaultPolylineOptions().color(if(it.amSpecialLevel == 0) android.graphics.Color.BLACK else android.graphics.Color.RED)
+                            ))
                             it.zoomToFit?.let { zoom ->
                                 if(zoom) {
                                     customGoogleMap.zoomToFit(it.list.last(), animated = true)
@@ -248,17 +321,18 @@ class MyFragment: Fragment() {
                             }
                         }
                         Status.RESETED -> {
-                            customGoogleMap.removePaths()
+                            _paths.forEach { it.remove() }
+                            _paths.clear()
                         }
                         Status.REMOVED_LAST_ELEMENT -> {
-                            customGoogleMap.removeLastPath()
+                            _paths.removeLast().remove()
                         }
                         Status.ADDED_SEVERAL_ELEMENTS -> {
-                            customGoogleMap.addPaths(
+                            _paths.addAll(customGoogleMap.addPaths(
                                 it.list.takeLast(it.n!!),
                                 it.animate ?: false,
                                 customGoogleMap.getDefaultPolylineOptions().color(android.graphics.Color.RED)
-                            )
+                            ))
                         }
                         else -> {
 
