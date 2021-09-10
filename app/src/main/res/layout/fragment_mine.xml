@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.customgooglemapexample.MyViewModel" />
+            type="com.example.customgooglemapexample.play.MyViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

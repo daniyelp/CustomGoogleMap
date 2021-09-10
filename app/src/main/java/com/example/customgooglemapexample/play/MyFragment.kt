@@ -1,4 +1,4 @@
-package com.example.customgooglemapexample
+package com.example.customgooglemapexample.play
 
 import android.os.Bundle
 import android.util.Log
@@ -27,7 +27,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.example.custom_google_map.CustomMapView
-import com.example.custom_google_map.vectorToBitmapDescriptor
+import com.example.customgooglemapexample.R
 import com.example.customgooglemapexample.databinding.FragmentMineBinding
 import com.example.customgooglemapexample.util.Status
 import com.google.android.gms.maps.model.*

@@ -1,4 +1,4 @@
-package com.example.customgooglemapexample
+package com.example.customgooglemapexample.play
 
 import androidx.lifecycle.*
 import com.example.custom_google_map.MockLocationTracker

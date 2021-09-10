@@ -2,10 +2,25 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/myFragment">
+    app:startDestination="@id/startFragment">
 
     <fragment
         android:id="@+id/myFragment"
-        android:name="com.example.customgooglemapexample.MyFragment"
+        android:name="com.example.customgooglemapexample.play.MyFragment"
         android:label="MyFragment" />
+    <fragment
+        android:id="@+id/startFragment"
+        android:name="com.example.customgooglemapexample.start.StartFragment"
+        android:label="StartFragment" >
+        <action
+            android:id="@+id/action_startFragment_to_demoFragment"
+            app:destination="@id/demoFragment" />
+        <action
+            android:id="@+id/action_startFragment_to_myFragment"
+            app:destination="@id/myFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/demoFragment"
+        android:name="com.example.customgooglemapexample.demo.DemoFragment"
+        android:label="DemoFragment" />
 </navigation>
