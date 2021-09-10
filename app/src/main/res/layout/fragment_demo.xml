@@ -7,7 +7,8 @@
     <com.example.custom_google_map.CustomMapView
         android:id="@+id/map_custom_demo"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        app:myLocationButtonPosition="top_right"/>
 
     <com.example.custom_google_map.StatusBar
         android:id="@+id/line_primary_status_demo"

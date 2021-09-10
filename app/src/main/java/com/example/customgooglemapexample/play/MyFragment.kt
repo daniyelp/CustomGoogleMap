@@ -384,6 +384,7 @@ class MyFragment: Fragment() {
         map_custom.onLowMemory()
     }
 
+    //crashes the app
     /*override fun onDestroy() {
         super.onDestroy()
         map_custom.onDestroy()
