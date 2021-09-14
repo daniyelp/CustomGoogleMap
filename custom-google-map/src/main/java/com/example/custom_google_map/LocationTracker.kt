@@ -34,35 +34,14 @@ class LocationTracker constructor(private val context: Context) {
         @Override
         override fun onLocationResult(result: LocationResult?) {
             super.onLocationResult(result)
-            Log.d("GPS", "STH")
             result?.locations?.forEach {
                 _lastLocation.value = LatLng(it.latitude, it.longitude)
-                Log.d("GPS", _lastLocation.value.toString())
             }
         }
     }
 
     fun startLocationUpdates() {
-        Log.d("GPS", "started location provider")
         _receivingLocationUpdates.value = true
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-                Log.d("GPS", "permissions denied")
-            return
-        }
         fusedLocationProviderClient.requestLocationUpdates(
             locationRequest,
             locationCallback,
@@ -71,7 +50,6 @@ class LocationTracker constructor(private val context: Context) {
     }
 
     fun stopLocationUpdates() {
-        Log.d("GPS", "stopped location provider")
         _receivingLocationUpdates.value = false
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }

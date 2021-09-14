@@ -12,17 +12,17 @@ class OsmRepository(private val osmApi: OsmApi){
         return getCityWithBoundary(lat, lon)
     }
 
-    suspend fun getCityWithBoundary(lat: Double, lon: Double) : Pair<String, List<LatLng>> {
+    suspend fun getCityWithBoundary(lat: Double, lon: Double, zoom : Int = 10) : Pair<String, List<LatLng>> {
         var city: String? = null
         var latLngs: List<LatLng>? = null
 
         try {
-            val response = osmApi.getCity(lat, lon)
+            val response = osmApi.getCity(lat, lon, zoom)
             if (response.isSuccessful) {
                 response.body()?.let {
                     city = it.address?.let {
                         //I don't really know what municipality is
-                        it.city ?: it.town ?: it.village ?: it.municipality
+                        it.state ?: it.city ?: it.town ?: it.village ?: it.municipality
                     }
                     it.geojson?.coordinates?.let { listOfBoundaries ->
                         if (listOfBoundaries.isNotEmpty()) {

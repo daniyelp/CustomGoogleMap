@@ -1,5 +1,6 @@
 package com.example.custom_google_map
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
+import android.view.animation.LinearInterpolator
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.graphics.Color
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -21,14 +23,15 @@ import java.util.*
 @ExperimentalAnimationApi
 class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayout(context, attributes) {
 
-    private class StatusController(private val onStatusChange: () -> Unit) {
+    private class StatusController(var durationBetweenLocationUpdates: Long, private val onStatusChange: () -> Unit) {
         private val TAG = "STATUS_CONTROLLER"
         enum class PrimaryStatus {
             NOTHING,
             INTERNET_OFF,
             GPS_OFF,
             ACQUIRING_LOCATION,
-            LOCATION_RETRIEVED
+            LOCATION_RETRIEVED,
+            CHILLING
         }
         enum class InternetStatus {
             INTERNET_ON,
@@ -43,9 +46,7 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
 
         var primaryStatus : PrimaryStatus = PrimaryStatus.NOTHING
             private set(value) {
-                Log.d(TAG, "old value is ${primaryStatus.toString()}, new value is ${value}")
                 if(primaryStatus != value) {
-                    Log.d(TAG, "on status change called with ${value}}")
                     field = value
                     onStatusChange()
                 }
@@ -88,8 +89,8 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
                                         }
                                     }
                                 },
-                                2000,
-                                2000
+                                durationBetweenLocationUpdates,
+                                durationBetweenLocationUpdates
                             )
                         }
                     }
@@ -113,8 +114,8 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
                                         }
                                     }
                                 },
-                                2000,
-                                2000
+                                durationBetweenLocationUpdates,
+                                durationBetweenLocationUpdates
                             )
                         }
                     }
@@ -154,6 +155,8 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
                 LocationStatus.CHILLING -> {
                     if (internetStatus == InternetStatus.INTERNET_OFF) {
                         primaryStatus = PrimaryStatus.INTERNET_OFF
+                    } else {
+                        primaryStatus = PrimaryStatus.CHILLING
                     }
                 }
             }
@@ -200,6 +203,14 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
                 statusController.internetOn = value
             }
 
+        var animationDuration = 1000L
+
+        var durationBetweenLocationUpdates = 2000L
+        set(value) {
+            field = value
+            statusController.durationBetweenLocationUpdates = value
+        }
+
         init {
             googleMap.uiSettings.isCompassEnabled = false
             googleMap.uiSettings.isMyLocationButtonEnabled = false
@@ -215,7 +226,7 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
                 updateCamera()
             }
 
-            statusController = StatusController {
+            statusController = StatusController(durationBetweenLocationUpdates) {
                 updateLocationMarker()
                 updateStatusLine()
             }
@@ -224,15 +235,18 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
 
         @ExperimentalAnimationApi
         private fun updateStatusLine() {
-            Log.d("STATUS_CONTROLLER", "updateLine with primary status ${statusController.primaryStatus}")
+
             when(statusController.primaryStatus) {
                 StatusController.PrimaryStatus.INTERNET_OFF -> statusBar?.display("INTERNET IS OFF", R.color.gray, true)
                 StatusController.PrimaryStatus.GPS_OFF -> statusBar?.display("GPS IS OFF", R.color.red, true)
                 StatusController.PrimaryStatus.ACQUIRING_LOCATION -> statusBar?.display("ACQUIRING LOCATION", R.color.blue, true)
                 StatusController.PrimaryStatus.LOCATION_RETRIEVED -> statusBar?.display("LOCATION ACQUIRED", R.color.green, false)
+                StatusController.PrimaryStatus.CHILLING -> statusBar?.hide(now = false)
                 else -> {}
             }
         }
+
+        private val valueAnimator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
 
         private fun updateLocationMarker() {
 
@@ -246,8 +260,42 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
                 marker.setIcon(getIcon(color))
             }
 
-            fun getColor() = when (statusController.primaryStatus) {
-                StatusController.PrimaryStatus.LOCATION_RETRIEVED -> android.graphics.Color.BLUE
+            fun animateMarker(marker: Marker, to: LatLng, duration: Long = 1000) {
+
+                if(marker == null) return
+
+                valueAnimator.removeAllUpdateListeners()
+                valueAnimator.end()
+                valueAnimator.cancel()
+
+                val from = marker.position
+
+                fun interpolate(t: Float, a: LatLng, b: LatLng) =
+                    LatLng (
+                        a.latitude * (1 - t) + b.latitude * t,
+                        a.longitude * (1 - t) + b.longitude * t
+                    )
+
+                with(valueAnimator) {
+                    this.duration = duration
+                    interpolator = LinearInterpolator()
+
+                    addUpdateListener(object : ValueAnimator.AnimatorUpdateListener{
+                        override fun onAnimationUpdate(valueAnimator: ValueAnimator?) {
+                            valueAnimator?.let {
+                                val t = it.animatedFraction
+                                val latLng = interpolate(t, from, to)
+                                marker.position = latLng
+                            }
+                        }
+                    })
+                    start()
+                }
+            }
+
+            fun getColor() = when (statusController.locationStatus) {
+                StatusController.LocationStatus.LOCATION_RETRIEVED -> android.graphics.Color.BLUE
+                StatusController.LocationStatus.CHILLING -> android.graphics.Color.BLUE
                 else -> android.graphics.Color.LTGRAY
             }
 
@@ -269,7 +317,7 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
 
             } else {
                 updateMarkerColor(locationMarker!!, getColor())
-                animateMarker(locationMarker!!, getPosition())
+                animateMarker(locationMarker!!, getPosition(), duration = animationDuration)
             }
 
         }
@@ -314,7 +362,7 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
                 googleMap,
                 path,
                 polylineOptions,
-                if(animated) 1000 else 0
+                if(animated) animationDuration else 0
             ).also { it.start() }
 
             return polyline
@@ -343,17 +391,17 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
         }
 
         @JvmName("zoomToFit1")
-        fun zoomToFit(path: List<LatLng>, animated: Boolean = false) {
+        fun zoomToFit(path: List<LatLng>, animated: Boolean = false, paddingPx: Int = 50) {
             if(animated) {
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(getBoundsToFit(path), 20))
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(getBoundsToFit(path), paddingPx))
             } else {
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(getBoundsToFit(path), 20))
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(getBoundsToFit(path), paddingPx))
             }
         }
 
-        fun zoomToFit(paths: List<List<LatLng>>, animated: Boolean = false) {
+        fun zoomToFit(paths: List<List<LatLng>>, animated: Boolean = false, paddingPx: Int = 50) {
             val pathsFlattened = paths.flatten()
-            zoomToFit(pathsFlattened, animated)
+            zoomToFit(pathsFlattened, animated, paddingPx)
         }
 
         private var zooming = false

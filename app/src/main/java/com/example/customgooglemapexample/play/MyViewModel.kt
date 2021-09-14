@@ -1,7 +1,7 @@
 package com.example.customgooglemapexample.play
 
 import androidx.lifecycle.*
-import com.example.custom_google_map.MockLocationTracker
+import com.example.custom_google_map.FakeLocationTracker
 import com.example.customgooglemapexample.util.*
 import com.example.gpsbroadcastreceiver.GpsBroadcastReceiver
 import com.example.internetbroadcastreceiver.InternetBroadcastReceiver
@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MyViewModel @Inject constructor (
     //private val locationTracker: LocationTracker,
-    private val locationTracker: MockLocationTracker,
+    private val locationTracker: FakeLocationTracker,
     private val gpsBroadcastReceiver: GpsBroadcastReceiver,
     private val internetBroadcastReceiver: InternetBroadcastReceiver,
     private val snapToRoads: SnapToRoads,

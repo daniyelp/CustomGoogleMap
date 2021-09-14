@@ -259,14 +259,12 @@ class MyFragment: Fragment() {
             gpsEnabled.observe(viewLifecycleOwner, Observer {
                 it?.let {
                     customGoogleMap.gpsOn = it
-                    Log.d("GPS", "gps status changed inside fragment")
                 }
             })
 
             internetEnabled.observe(viewLifecycleOwner, Observer {
                 it?.let {
                     customGoogleMap.internetOn = it
-                    Log.d("INTERNET", "internet status changed inside fragment")
                 }
             })
 

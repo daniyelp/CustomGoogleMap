@@ -6,7 +6,7 @@ import com.google.android.gms.maps.model.LatLng
 import kotlin.concurrent.thread
 
 //would have been better practice to use an interface
-class MockLocationTracker {
+class FakeLocationTracker {
 
     private val _lastLocation = MutableLiveData<LatLng>()
     val lastLocation : LiveData<LatLng> = _lastLocation

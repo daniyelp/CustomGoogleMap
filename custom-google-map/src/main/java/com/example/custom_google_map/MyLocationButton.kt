@@ -18,11 +18,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 
 class MyLocationButton(context: Context, attributeSet: AttributeSet) : ConstraintLayout(context, attributeSet) {
+
     init {
         inflate(context, R.layout.button_my_location, this)
 
         view_compose_my_location_button.setContent {
             MyLocationButton()
+        }
+        setOnClickListener {
+            onClick()
         }
     }
 
@@ -50,7 +54,7 @@ class MyLocationButton(context: Context, attributeSet: AttributeSet) : Constrain
     @Composable
     fun MyLocationButton(elevation : Dp = 8.dp) {
         FloatingActionButton(
-            onClick = { center = !center},
+            onClick = { onClick() },
             backgroundColor = Color.White,
             elevation = elevation(elevation, 0.dp),
             modifier = Modifier
@@ -62,5 +66,9 @@ class MyLocationButton(context: Context, attributeSet: AttributeSet) : Constrain
                 contentDescription = "my location button"
             )
         }
+    }
+
+    private fun onClick() {
+        center = !center
     }
 }

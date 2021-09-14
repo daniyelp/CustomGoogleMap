@@ -3,7 +3,7 @@ package com.example.customgooglemapexample.di
 import android.content.Context
 import com.example.customgooglemapexample.R
 import com.example.custom_google_map.LocationTracker
-import com.example.custom_google_map.MockLocationTracker
+import com.example.custom_google_map.FakeLocationTracker
 import com.example.gpsbroadcastreceiver.GpsBroadcastReceiver
 import com.example.internetbroadcastreceiver.InternetBroadcastReceiver
 import com.example.openstreetmap.Osm
@@ -52,7 +52,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideMockLocationTracker() : MockLocationTracker {
-        return MockLocationTracker()
+    fun provideMockLocationTracker() : FakeLocationTracker {
+        return FakeLocationTracker()
     }
 }

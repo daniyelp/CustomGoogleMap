@@ -41,6 +41,7 @@ class StatusBar(context: Context, attributes: AttributeSet) : ConstraintLayout(c
     private val untilGoneDuration = 1500L
     private var hideHandler = Handler(Looper.getMainLooper())
     private val hideRunnable = Runnable { hide() }
+    private var hasCallBack = false
 
     fun display(text: String, color: Int, infinite: Boolean = false) {
 
@@ -52,14 +53,21 @@ class StatusBar(context: Context, attributes: AttributeSet) : ConstraintLayout(c
 
         if(!infinite) {
             hideHandler.postDelayed(hideRunnable, untilGoneDuration)
+            hasCallBack = true
         }
     }
 
-    fun hide() {
+    fun hide(now: Boolean = true) {
 
-        hideHandler.removeCallbacks(hideRunnable)
-
-        isVisible.value = false
+        if(now) {
+            hideHandler.removeCallbacks(hideRunnable)
+            hasCallBack = false
+            isVisible.value = false
+        } else {
+            if(!hasCallBack) {
+                isVisible.value = false
+            }
+        }
     }
 
     @ExperimentalAnimationApi

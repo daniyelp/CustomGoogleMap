@@ -27,32 +27,3 @@ fun vectorToBitmapDescriptor(@DrawableRes id: Int, @ColorInt color: Int, resourc
     vectorDrawable.draw(canvas)
     return BitmapDescriptorFactory.fromBitmap(bitmap)
 }
-
-fun animateMarker(marker: Marker, to: LatLng, duration: Long = 300) {
-
-    if(marker == null) return
-
-    val from = marker.position
-
-    fun interpolate(t: Float, a: LatLng, b: LatLng) =
-        LatLng (
-            a.latitude * (1 - t) + b.latitude * t,
-            a.longitude * (1 - t) + b.longitude * t
-        )
-
-    with(ValueAnimator.ofFloat(0f, 1f)) {
-        this.duration = duration
-        interpolator = LinearInterpolator()
-        addUpdateListener(object : ValueAnimator.AnimatorUpdateListener{
-            override fun onAnimationUpdate(valueAnimator: ValueAnimator?) {
-                valueAnimator?.let {
-                    val t = it.animatedFraction
-                    val latLng = interpolate(t, from, to)
-                    marker.position = latLng
-                }
-            }
-        })
-        start()
-    }
-
-}
