@@ -63,6 +63,7 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
             private
             set(value) {
                 field = value
+
                 when(value) {
                     LocationStatus.GPS_OFF -> {
                         locationTimer?.cancel()
@@ -248,6 +249,8 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
 
         private val valueAnimator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
 
+        private var penultimateLocationStatus: StatusController.LocationStatus? = null
+
         private fun updateLocationMarker() {
 
             fun getIcon(color: Int) = vectorToBitmapDescriptor(
@@ -261,8 +264,6 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
             }
 
             fun animateMarker(marker: Marker, to: LatLng, duration: Long = 1000) {
-
-                if(marker == null) return
 
                 valueAnimator.removeAllUpdateListeners()
                 valueAnimator.end()
@@ -301,6 +302,9 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
 
             fun getPosition() = lastLatLng!!
 
+            fun shouldAnimate() =
+                ! ( penultimateLocationStatus == StatusController.LocationStatus.ACQUIRING_LOCATION && statusController.locationStatus == StatusController.LocationStatus.LOCATION_RETRIEVED)
+
             if(lastLatLng == null) {
                 return
             }
@@ -317,8 +321,14 @@ class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayo
 
             } else {
                 updateMarkerColor(locationMarker!!, getColor())
-                animateMarker(locationMarker!!, getPosition(), duration = animationDuration)
+                if(shouldAnimate()) {
+                    animateMarker(locationMarker!!, getPosition(), duration = animationDuration)
+                } else {
+                    locationMarker!!.position = getPosition()
+                }
             }
+
+            penultimateLocationStatus = statusController.locationStatus
 
         }
 
