@@ -15,6 +15,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.fragment.app.Fragment
 import com.example.custom_google_map.CustomMapView
 import com.example.custom_google_map.MyLocationButton
+import com.example.customgooglemapexample.BuildConfig
 import com.example.customgooglemapexample.R
 import com.example.openstreetmap.Osm
 import com.example.snap_to_roads.SnapToRoads
@@ -41,7 +42,7 @@ class DemoFragment: Fragment(R.layout.fragment_demo) {
             customGoogleMap = it
             selector_map_type_demo.customGoogleMap = it
 
-            snapToRoads = SnapToRoads(resources.getString(R.string.google_maps_api_key))
+            snapToRoads = SnapToRoads(BuildConfig.GMAPS_API_KEY)
             osm = Osm()
 
             startDemo()

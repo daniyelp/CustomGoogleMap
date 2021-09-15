@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.customgooglemapexample.R
 import com.example.custom_google_map.LocationTracker
 import com.example.custom_google_map.FakeLocationTracker
+import com.example.customgooglemapexample.BuildConfig
 import com.example.gpsbroadcastreceiver.GpsBroadcastReceiver
 import com.example.internetbroadcastreceiver.InternetBroadcastReceiver
 import com.example.openstreetmap.Osm
@@ -40,7 +41,7 @@ object AppModule {
     @Singleton
     @Provides
     fun provideSnapToRoads(@ApplicationContext context: Context) : SnapToRoads{
-        val apiKey = context.resources.getString(R.string.google_maps_api_key)
+        val apiKey = BuildConfig.GMAPS_API_KEY
         return SnapToRoads(apiKey)
     }
 
