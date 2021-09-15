@@ -3,7 +3,11 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-android-extensions'
     id 'kotlin-kapt'
+    id 'maven-publish'
 }
+
+group='com.github.daniyelp'
+version = '1.12'
 
 android {
     compileSdkVersion 31
@@ -69,4 +73,14 @@ dependencies {
     // Integration with ViewModels
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07'
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02"
+}
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+            }
+        }
+    }
 }

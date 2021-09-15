@@ -12,12 +12,12 @@ android {
     compileSdkVersion 31
 
     defaultConfig {
+        manifestPlaceholders = [GMAPS_API_KEY:getLocalProperty("GMAPS_API_KEY")]
         applicationId "com.example.customgooglemapexample"
         minSdkVersion 21
         targetSdkVersion 31
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -102,4 +102,15 @@ dependencies {
     implementation 'androidx.compose.runtime:runtime-livedata:1.1.0-alpha03'
 
     implementation 'androidx.compose.ui:ui-test-manifest:1.1.0-alpha03'
+}
+
+def getLocalProperty(String propertyName) {
+    def propsFile = rootProject.file('local.properties')
+    if (propsFile.exists()) {
+        def props = new Properties()
+        props.load(new FileInputStream(propsFile))
+        return props[propertyName]
+    } else {
+        return ""
+    }
 }
