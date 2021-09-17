@@ -24,7 +24,6 @@ import java.util.*
 class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayout(context, attributes) {
 
     private class StatusController(var durationBetweenLocationUpdates: Long, private val onStatusChange: () -> Unit) {
-        private val TAG = "STATUS_CONTROLLER"
         enum class PrimaryStatus {
             NOTHING,
             INTERNET_OFF,
