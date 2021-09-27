@@ -25,7 +25,10 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import kotlinx.android.synthetic.main.bar_status.view.*
 
 @ExperimentalAnimationApi
-class StatusBar(context: Context, attributes: AttributeSet) : ConstraintLayout(context, attributes) {
+class StatusBar: ConstraintLayout {
+
+    constructor(context: Context): super(context)
+    constructor(context: Context, attributes: AttributeSet): super(context, attributes)
 
     init {
         inflate(context, R.layout.bar_status, this)

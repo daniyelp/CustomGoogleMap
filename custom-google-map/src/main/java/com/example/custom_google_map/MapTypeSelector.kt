@@ -35,7 +35,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.selector_map_type.view.*
 
 @ExperimentalAnimationApi
-class MapTypeSelector(context: Context, attributeSet: AttributeSet) : ConstraintLayout(context, attributeSet) {
+class MapTypeSelector: ConstraintLayout {
+
+    constructor(context: Context): super(context)
+    constructor(context: Context, attributes: AttributeSet): super(context, attributes)
 
     //I do this strange thing below so that I can call a function right away after customGoogleMap
     //has been initialized

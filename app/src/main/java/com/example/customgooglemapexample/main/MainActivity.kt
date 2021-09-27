@@ -8,8 +8,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import android.view.MotionEvent
 
 
-
-
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

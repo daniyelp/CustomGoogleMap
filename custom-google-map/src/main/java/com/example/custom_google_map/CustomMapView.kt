@@ -7,10 +7,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
-import android.util.Log
 import android.view.animation.LinearInterpolator
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.ui.graphics.Color
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -21,7 +19,10 @@ import java.util.*
 
 
 @ExperimentalAnimationApi
-class CustomMapView(context: Context, attributes: AttributeSet) : ConstraintLayout(context, attributes) {
+class CustomMapView: ConstraintLayout {
+
+    constructor(context: Context): super(context)
+    constructor(context: Context, attributes: AttributeSet): super(context, attributes)
 
     private class StatusController(var durationBetweenLocationUpdates: Long, private val onStatusChange: () -> Unit) {
         enum class PrimaryStatus {

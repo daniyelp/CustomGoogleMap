@@ -17,8 +17,7 @@
         <com.example.custom_google_map.CustomMapView
             android:id="@+id/map_custom"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:myLocationButtonPosition="top_right"/>
+            android:layout_height="match_parent"/>
 
         <androidx.compose.ui.platform.ComposeView
             android:id="@+id/view_compose_mine"

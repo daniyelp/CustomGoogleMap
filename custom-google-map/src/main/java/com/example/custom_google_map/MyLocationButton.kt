@@ -17,7 +17,10 @@ import kotlinx.android.synthetic.main.button_my_location.view.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 
-class MyLocationButton(context: Context, attributeSet: AttributeSet) : ConstraintLayout(context, attributeSet) {
+class MyLocationButton: ConstraintLayout {
+
+    constructor(context: Context): super(context)
+    constructor(context: Context, attributes: AttributeSet): super(context, attributes)
 
     init {
         inflate(context, R.layout.button_my_location, this)
