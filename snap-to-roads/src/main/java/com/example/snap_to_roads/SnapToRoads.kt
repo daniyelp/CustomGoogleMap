@@ -8,7 +8,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class SnapToRoads(private val apiKey: String) {
+class SnapToRoads(apiKey: String) {
 
     private val snapToRoadsRepository: SnapToRoadsRepository
 
