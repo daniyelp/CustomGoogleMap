@@ -12,6 +12,16 @@ android {
     compileSdkVersion 31
 
     defaultConfig {
+        buildConfigField "Float", "MY_LOCATION_BUTTON_X", getLocalProperty("myLocationButtonX")
+        buildConfigField "Float", "MY_LOCATION_BUTTON_Y", getLocalProperty("myLocationButtonY")
+        buildConfigField "Float", "MAP_TYPE_SELECTOR_X", getLocalProperty("mapTypeSelectorX")
+        buildConfigField "Float", "MAP_TYPE_SELECTOR_Y", getLocalProperty("mapTypeSelectorY")
+        buildConfigField "Float", "DEFAULT_MAP_TYPE_X", getLocalProperty("defaultMapTypeX")
+        buildConfigField "Float", "DEFAULT_MAP_TYPE_Y", getLocalProperty("defaultMapTypeY")
+        buildConfigField "Float", "TERRAIN_MAP_TYPE_X", getLocalProperty("terrainMapTypeX")
+        buildConfigField "Float", "TERRAIN_MAP_TYPE_Y", getLocalProperty("terrainMapTypeY")
+        buildConfigField "Float", "SATELLITE_MAP_TYPE_X", getLocalProperty("satelliteMapTypeX")
+        buildConfigField "Float", "SATELLITE_MAP_TYPE_Y", getLocalProperty("satelliteMapTypeY")
         manifestPlaceholders = [GMAPS_API_KEY:getLocalProperty("GMAPS_API_KEY")]
         applicationId "com.example.customgooglemapexample"
         minSdkVersion 21
@@ -45,6 +55,17 @@ android {
     }
     packagingOptions {
         exclude 'META-INF/*'
+    }
+}
+
+def getLocalProperty(String propertyName) {
+    def propsFile = rootProject.file('local.properties')
+    if (propsFile.exists()) {
+        def props = new Properties()
+        props.load(new FileInputStream(propsFile))
+        return props[propertyName]
+    } else {
+        return null
     }
 }
 
@@ -102,15 +123,4 @@ dependencies {
     implementation 'androidx.compose.runtime:runtime-livedata:1.1.0-alpha03'
 
     implementation 'androidx.compose.ui:ui-test-manifest:1.1.0-alpha03'
-}
-
-def getLocalProperty(String propertyName) {
-    def propsFile = rootProject.file('local.properties')
-    if (propsFile.exists()) {
-        def props = new Properties()
-        props.load(new FileInputStream(propsFile))
-        return props[propertyName]
-    } else {
-        return ""
-    }
 }

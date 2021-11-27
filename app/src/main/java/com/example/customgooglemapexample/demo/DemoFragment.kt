@@ -52,20 +52,20 @@ class DemoFragment: Fragment(R.layout.fragment_demo) {
     @DelicateCoroutinesApi
     private fun startDemo() {
 
-        val myLocationButtonX = 950f
-        val myLocationButtonY = 2050f
+        val myLocationButtonX: Float = BuildConfig.MY_LOCATION_BUTTON_X
+        val myLocationButtonY: Float = BuildConfig.MY_LOCATION_BUTTON_Y
 
-        val selectorX = 950f
-        val selectorY = 1780f
+        val mapTypeSelectorX = BuildConfig.MAP_TYPE_SELECTOR_X
+        val mapTypeSelectorY = BuildConfig.MAP_TYPE_SELECTOR_Y
 
-        val defaultX = 450f
-        val defaultY = 500f
+        val defaultMapTypeX = BuildConfig.DEFAULT_MAP_TYPE_X
+        val defaultMapTypeY = BuildConfig.DEFAULT_MAP_TYPE_Y
 
-        val terrainX = 660f
-        val terrainY = 500f
+        val terrainMapTypeX = BuildConfig.TERRAIN_MAP_TYPE_X
+        val terrainMapTypeY = BuildConfig.TERRAIN_MAP_TYPE_Y
 
-        val satelliteX = 840f
-        val satelliteY = 500f
+        val satelliteMapTypeX = BuildConfig.SATELLITE_MAP_TYPE_X
+        val satelliteMapTypeY = BuildConfig.SATELLITE_MAP_TYPE_Y
 
         GlobalScope.launch {
             customGoogleMap.durationBetweenLocationUpdates = 1200L
@@ -121,25 +121,25 @@ class DemoFragment: Fragment(R.layout.fragment_demo) {
 
             delay (1100)
 
-            touch(selectorX, selectorY)
+            touch(mapTypeSelectorX, mapTypeSelectorY)
 
             delay(1000)
 
-            touch(terrainX, terrainY)
+            touch(terrainMapTypeX, terrainMapTypeY)
 
             delay(1000)
 
-            touch(satelliteX, satelliteY)
+            touch(satelliteMapTypeX, satelliteMapTypeY)
 
             delay(1000)
 
-            touch(defaultX, defaultY)
+            touch(defaultMapTypeX, defaultMapTypeY)
 
             run = false
 
             delay(1000)
 
-            touch(selectorX, selectorY)
+            touch(mapTypeSelectorX, mapTypeSelectorY)
 
             delay(4000)
 
