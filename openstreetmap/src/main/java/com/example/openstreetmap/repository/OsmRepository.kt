@@ -1,23 +1,18 @@
 package com.example.openstreetmap.repository
 
-import android.util.Log
 import com.example.openstreetmap.api.OsmApi
 import com.google.android.gms.maps.model.LatLng
 
 class OsmRepository(private val osmApi: OsmApi) {
 
-    suspend fun getCityWithBoundary(latLng: LatLng) : Pair<String, List<LatLng>> {
-        val lat = latLng.latitude
-        val lon = latLng.longitude
-        return getCityWithBoundary(lat, lon)
-    }
+    class OsmException(message: String? = null): Exception(message)
 
-    suspend fun getCityWithBoundary(lat: Double, lon: Double, zoom : Int = 10) : Pair<String, List<LatLng>> {
+    suspend fun getCityWithBoundary(latLng: LatLng, zoom: Int) : Pair<String, List<LatLng>> {
         var city: String? = null
         var latLngs: List<LatLng>? = null
 
         try {
-            val response = osmApi.getCity(lat, lon, zoom)
+            val response = osmApi.getCity(latLng.latitude, latLng.longitude, zoom)
             if (response.isSuccessful) {
                 response.body()?.let {
                     city = it.address?.let {
@@ -32,14 +27,14 @@ class OsmRepository(private val osmApi: OsmApi) {
                     }
                 }
             } else {
-                Log.d("RETROFIT", "not successful")
+                throw OsmException(response.errorBody()?.charStream().toString())
             }
         } catch (e: Exception) {
-            Log.d("RETROFIT", e.toString())
+            throw OsmException(e.message)
         }
 
         if(city == null || latLngs == null) {
-            throw Exception()
+            throw OsmException("response successful but failed to determine city or boundary")
         }
 
         return Pair(city!!, latLngs!!)

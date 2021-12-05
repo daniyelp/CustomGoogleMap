@@ -180,7 +180,7 @@ class MyViewModel @Inject constructor (
     fun osm() {
         _markers.value!!.list.last().let { latLng ->
             viewModelScope.launch {
-                val (city, boundary) = osm.getCityWithBoundary(latLng.latitude, latLng.longitude)
+                val (city, boundary) = osm.getCityWithBoundary(latLng)
                 _displayCityName.value = DisplayResource(city, true)
                 addPath(boundary, animate = true, amSpecialLevel = 1, zoomToFit = true)
             }

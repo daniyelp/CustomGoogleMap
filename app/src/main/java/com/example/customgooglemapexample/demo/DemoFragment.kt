@@ -218,7 +218,7 @@ class DemoFragment: Fragment(R.layout.fragment_demo) {
             delay(500)
 
             val latLng = snappedPath.first()
-            val (city, boundary) = osm.getCityWithBoundary(latLng.latitude, latLng.longitude)
+            val (city, boundary) = osm.getCityWithBoundary(latLng)
 
             requireActivity().runOnUiThread() {
             googleMapPlus.zoomToFit(boundary, animated = true)

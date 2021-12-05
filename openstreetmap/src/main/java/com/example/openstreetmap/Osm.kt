@@ -13,17 +13,15 @@ data class City(val name: String, val paths: MutableList<List<LatLng>>, val boun
 class Osm {
 
     private val osmRepository: OsmRepository
+    val DEFAULT_ZOOM = 10
 
     init {
         val osmApi = provideOsmApi()
         osmRepository = OsmRepository(osmApi)
     }
 
-    suspend fun getCityWithBoundary(lat: Double, lon: Double) : Pair<String, List<LatLng>> {
-        return osmRepository.getCityWithBoundary(lat, lon)
-    }
-
-    suspend fun getCityWithBoundary(latLng: LatLng) = getCityWithBoundary(latLng.latitude, latLng.longitude)
+    suspend fun getCityWithBoundary(latLng: LatLng, zoom: Int = DEFAULT_ZOOM) =
+        osmRepository.getCityWithBoundary(latLng, zoom)
 
     private fun provideOsmApi() : OsmApi {
         val client = OkHttpClient.Builder()
@@ -37,13 +35,13 @@ class Osm {
             .create(OsmApi::class.java)
     }
 
-    suspend fun splitOnCity(paths: List<List<LatLng>>) : List<City> {
+    suspend fun splitOnCity(paths: List<List<LatLng>>, zoom: Int = DEFAULT_ZOOM) : List<City> {
         val cities = mutableListOf<City>()
 
         for(curPath in paths) {
 
             val firstLatLng = curPath[0]
-            var (curCityName, curBoundary) = osmRepository.getCityWithBoundary(firstLatLng.latitude, firstLatLng.longitude)
+            var (curCityName, curBoundary) = getCityWithBoundary(firstLatLng, zoom)
             var auxPath = mutableListOf(firstLatLng)
 
             fun updateOrAddCity() {
@@ -66,10 +64,8 @@ class Osm {
                     auxPath.add(latLng)
                 } else {
                     updateOrAddCity()
-
                     auxPath = mutableListOf(latLng)
-
-                    with(osmRepository.getCityWithBoundary(latLng.latitude, latLng.longitude)) {
+                    with(getCityWithBoundary(latLng, zoom)) {
                         curCityName = first
                         curBoundary = second
                     }
