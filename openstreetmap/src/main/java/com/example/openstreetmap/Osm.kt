@@ -23,6 +23,8 @@ class Osm {
         return osmRepository.getCityWithBoundary(lat, lon)
     }
 
+    suspend fun getCityWithBoundary(latLng: LatLng) = getCityWithBoundary(latLng.latitude, latLng.longitude)
+
     private fun provideOsmApi() : OsmApi {
         val client = OkHttpClient.Builder()
             .build()
@@ -36,7 +38,6 @@ class Osm {
     }
 
     suspend fun splitOnCity(paths: List<List<LatLng>>) : List<City> {
-
         val cities = mutableListOf<City>()
 
         for(curPath in paths) {
@@ -46,7 +47,7 @@ class Osm {
             var auxPath = mutableListOf(firstLatLng)
 
             fun updateOrAddCity() {
-                var city = cities.filter { city -> city.name == curCityName }.firstOrNull()
+                val city = cities.filter { city -> city.name == curCityName }.firstOrNull()
                 if(city == null) {
                     cities.add(City(curCityName, mutableListOf(auxPath), curBoundary))
                 } else {
@@ -55,14 +56,12 @@ class Osm {
             }
 
             for(latLng in curPath.subList(1, curPath.size)) {
-
                 /**
                  * We create a City instance with the auxPath we created so far, City(name, list(auxPath), boundary)
                  * But we could find this City present in our cities list, it could have been visited before
                  * In this case, we append auxPath to the paths of that already there City
                  * If this is not the case, we just add the new City instance to the cities list
                  */
-
                 if(PolyUtil.containsLocation(latLng, curBoundary, true)) {
                     auxPath.add(latLng)
                 } else {
@@ -74,7 +73,6 @@ class Osm {
                         curCityName = first
                         curBoundary = second
                     }
-
                 }
             }
             updateOrAddCity()

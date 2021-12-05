@@ -135,11 +135,11 @@ class MyViewModel @Inject constructor (
     }
 
     fun undoAllMarkers() {
-        _markers.value = Resource(listOf(), Status.RESETED)
+        _markers.value = Resource(listOf(), Status.RESET)
     }
 
     fun undoAllPaths() {
-        _paths.value = Resource(listOf(), Status.RESETED)
+        _paths.value = Resource(listOf(), Status.RESET)
     }
 
     fun reset() {

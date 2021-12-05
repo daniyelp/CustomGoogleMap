@@ -74,7 +74,7 @@ class MapTypeSelector: ConstraintLayout {
     private val terrainTypeSelected = mutableStateOf(false)
 
     @Composable
-    fun MapTypeSelectorItem(icon: Int, text: String, selected: MutableState<Boolean>, onClick: () -> Unit) {
+    private fun MapTypeSelectorItem(icon: Int, text: String, selected: MutableState<Boolean>, onClick: () -> Unit) {
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -89,9 +89,7 @@ class MapTypeSelector: ConstraintLayout {
                         if (selected.value) colorResource(R.color.maps_blue) else Color.White,
                         RoundedCornerShape(20)
                     )
-                    .clickable {
-                        onClick()
-                    }
+                    .clickable(onClick = onClick)
             )
             Text(
                 text = text,
@@ -199,5 +197,4 @@ class MapTypeSelector: ConstraintLayout {
             }
         }
     }
-
 }

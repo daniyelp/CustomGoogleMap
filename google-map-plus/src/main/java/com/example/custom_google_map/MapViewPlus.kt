@@ -17,7 +17,6 @@ import de.p72b.maps.animation.AnimatedPolyline
 import kotlinx.android.synthetic.main.map_view_custom.view.*
 import java.util.*
 
-
 @ExperimentalAnimationApi
 class MapViewPlus: ConstraintLayout {
 
@@ -264,7 +263,6 @@ class MapViewPlus: ConstraintLayout {
             }
 
             fun animateMarker(marker: Marker, to: LatLng, duration: Long = 1000) {
-
                 valueAnimator.removeAllUpdateListeners()
                 valueAnimator.end()
                 valueAnimator.cancel()

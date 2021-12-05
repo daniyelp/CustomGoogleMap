@@ -6,6 +6,6 @@ enum class Status {
     INITIALIZED,
     ADDED_ELEMENT,
     ADDED_SEVERAL_ELEMENTS,
-    RESETED,
+    RESET,
     REMOVED_LAST_ELEMENT
 }

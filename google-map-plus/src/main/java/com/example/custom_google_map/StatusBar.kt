@@ -40,14 +40,12 @@ class StatusBar: ConstraintLayout {
     private val isVisible = mutableStateOf(false)
     private val text = mutableStateOf("")
     private val color = mutableStateOf(R.color.gray)
-
     private val untilGoneDuration = 1500L
     private var hideHandler = Handler(Looper.getMainLooper())
     private val hideRunnable = Runnable { hide() }
     private var hasCallBack = false
 
     fun display(text: String, color: Int, infinite: Boolean = false) {
-
         hideHandler.removeCallbacks(hideRunnable)
 
         isVisible.value = true
@@ -88,17 +86,11 @@ class StatusBar: ConstraintLayout {
             ),
             modifier = Modifier
                 .padding(8.dp)
-                .clip(
-                    shape = RoundedCornerShape(5)
-                )
+                .clip(shape = RoundedCornerShape(5))
         ) {
-            Card(
-
-                backgroundColor = colorResource(color.value),
-            ) {
+            Card(backgroundColor = colorResource(color.value)) {
                 Text(
-                    modifier = Modifier
-                        .padding(6.dp),
+                    modifier = Modifier.padding(6.dp),
                     text = text.value,
                     color = Color.White,
                     fontSize = 16.sp

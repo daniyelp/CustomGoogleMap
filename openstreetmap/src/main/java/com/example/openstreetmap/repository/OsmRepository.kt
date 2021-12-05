@@ -4,7 +4,7 @@ import android.util.Log
 import com.example.openstreetmap.api.OsmApi
 import com.google.android.gms.maps.model.LatLng
 
-class OsmRepository(private val osmApi: OsmApi){
+class OsmRepository(private val osmApi: OsmApi) {
 
     suspend fun getCityWithBoundary(latLng: LatLng) : Pair<String, List<LatLng>> {
         val lat = latLng.latitude
@@ -21,7 +21,6 @@ class OsmRepository(private val osmApi: OsmApi){
             if (response.isSuccessful) {
                 response.body()?.let {
                     city = it.address?.let {
-                        //I don't really know what municipality is
                         it.state ?: it.city ?: it.town ?: it.village ?: it.municipality
                     }
                     it.geojson?.coordinates?.let { listOfBoundaries ->

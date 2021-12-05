@@ -1,7 +1,6 @@
 package com.example.customgooglemapexample.play
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import com.example.custom_google_map.MapViewPlus
 import com.example.customgooglemapexample.R
 import com.example.customgooglemapexample.databinding.FragmentMineBinding
@@ -37,11 +35,10 @@ import kotlinx.android.synthetic.main.fragment_mine.*
 
 @ExperimentalAnimationApi
 @AndroidEntryPoint
-class MyFragment: Fragment() {
+class MyFragment : Fragment() {
 
     private lateinit var binding: FragmentMineBinding
-    private val viewModel : MyViewModel by viewModels()
-
+    private val viewModel: MyViewModel by viewModels()
     private lateinit var googleMapPlus: MapViewPlus.GoogleMapPlus
 
     override fun onCreateView(
@@ -49,14 +46,12 @@ class MyFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_mine,
             container,
             false
         )
-
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
@@ -75,9 +70,18 @@ class MyFragment: Fragment() {
         val undoMarkerEnabled by viewModel.undoMarkerEnabled.observeAsState(false)
         val undoPathEnabled by viewModel.undoPathEnabled.observeAsState(false)
 
+        @Composable
+        fun MyDivider() {
+            Divider(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(50))
+                    .width(60.dp),
+                color = Color.Black,
+                thickness = 3.dp
+            )
+        }
         Card(
-            modifier = Modifier
-                .padding(8.dp),
+            modifier = Modifier.padding(8.dp),
             elevation = 0.dp,
             backgroundColor = Color.Gray.copy(alpha = 0.0f)
         ) {
@@ -85,16 +89,7 @@ class MyFragment: Fragment() {
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-
-                Divider(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(50))
-                        .width(60.dp),
-                    color = Color.Black,
-                    thickness = 3
-                        .dp,
-                )
-
+                MyDivider()
                 Column(
                     modifier = Modifier
                         .height(200.dp)
@@ -102,119 +97,98 @@ class MyFragment: Fragment() {
                     horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Button(
-                        onClick = { viewModel.reset() },
-                    ) {
+                    Button(onClick = viewModel::reset) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_clear),
-                            contentDescription = "Reset",
-                            modifier = Modifier
-                                .size(20.dp)
+                            contentDescription = "",
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                     Button(
-                        onClick = { viewModel.connect() },
+                        onClick = viewModel::connect,
                         enabled = connectEnabled
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_path),
-                            contentDescription = "Connect",
-                            modifier = Modifier
-                                .size(20.dp)
+                            contentDescription = "",
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                     Button(
-                        onClick = { viewModel.connect2() },
+                        onClick = viewModel::connect2,
                         enabled = connect2Enabled
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_path),
-                            contentDescription = "Connect2",
-                            modifier = Modifier
-                                .size(20.dp)
+                            contentDescription = "",
+                            modifier = Modifier.size(20.dp)
                         )
                         Text(text = "+")
                     }
                     Button(
-                        onClick = { viewModel.onNewStartMarker() },
+                        onClick = viewModel::onNewStartMarker,
                         enabled = addStartMarkerEnabled,
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = colorResource(id = R.color.green)
-                        )
+                        colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.green))
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_flag),
-                            contentDescription = "start",
-                            modifier = Modifier
-                                .size(20.dp)
+                            contentDescription = "",
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                     Button(
-                        onClick = { viewModel.onNewFinishMarker() },
+                        onClick = viewModel::onNewFinishMarker,
                         enabled = addFinishMarkerEnabled,
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = colorResource(id = R.color.red)
-                        )
+                        colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.red))
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_flag),
-                            contentDescription = "finish",
-                            modifier = Modifier
-                                .size(20.dp)
+                            contentDescription = "",
+                            modifier = Modifier.size(20.dp)
                         )
                     }
-
                     Button(
-                        onClick = { viewModel.snapToRoads() },
+                        onClick = viewModel::snapToRoads,
                         enabled = snapToRoadsEnabled
                     ) {
                         Text("STR")
                     }
                     Button(
-                        onClick = { viewModel.osm() },
+                        onClick = viewModel::osm,
                         enabled = osmEnabled
                     ) {
                         Text("OSM")
                     }
                     Button(
-                        onClick = { viewModel.split() },
+                        onClick = viewModel::split,
                         enabled = splitEnabled
                     ) {
                         Text("SPLIT")
                     }
                     Button(
-                        onClick = { viewModel.undoMarker() },
+                        onClick = viewModel::undoMarker,
                         enabled = undoMarkerEnabled
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_undo),
-                            contentDescription = "undo",
-                            modifier = Modifier
-                                .size(20.dp)
+                            contentDescription = "",
+                            modifier = Modifier.size(20.dp)
                         )
                         Text("MARKER")
                     }
                     Button(
-                        onClick = { viewModel.undoPath() },
+                        onClick = viewModel::undoPath,
                         enabled = undoPathEnabled
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_undo),
-                            contentDescription = "undo",
-                            modifier = Modifier
-                                .size(20.dp)
+                            contentDescription = "",
+                            modifier = Modifier.size(20.dp)
                         )
                         Text("PATH")
                     }
                 }
-
-                Divider(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(50))
-                        .width(60.dp),
-                    color = Color.Black,
-                    thickness = 3.dp
-                )
+                MyDivider()
             }
 
         }
@@ -222,12 +196,14 @@ class MyFragment: Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        map_custom.myLocationButton = button_my_location
-        map_custom.statusBar = line_primary_status
-        map_custom.mapTypeSelector = selector_map_type
-        map_custom.getMapAsync {
-            googleMapPlus = it
-            selector_map_type.googleMapPlus = it
+        map_view_plus.myLocationButton = button_my_location
+        map_view_plus.statusBar = line_primary_status
+        map_view_plus.mapTypeSelector = selector_map_type
+        map_view_plus.getMapAsync { googleMapPlus ->
+            googleMapPlus.animationDuration = 1000L
+            googleMapPlus.durationBetweenLocationUpdates = 2000L
+            this.googleMapPlus = googleMapPlus
+            selector_map_type.googleMapPlus = googleMapPlus
             subscribeToObservers()
             googleMapPlus.setOnMapClickListener { latLng ->
                 viewModel.onNewMarker(latLng)
@@ -237,7 +213,6 @@ class MyFragment: Fragment() {
             }
             view_compose_mine.setContent {
                 Buttons(viewModel)
-
             }
         }
     }
@@ -247,147 +222,127 @@ class MyFragment: Fragment() {
 
     private fun subscribeToObservers() {
         with(viewModel) {
+            lastLocation.observe(viewLifecycleOwner) {
+                googleMapPlus.newLatLng(it)
+            }
 
-            lastLocation.observe(viewLifecycleOwner, Observer {
-                it?.let {
-                    googleMapPlus.newLatLng(it)
-                }
-            })
+            gpsEnabled.observe(viewLifecycleOwner) {
+                googleMapPlus.gpsOn = it
+            }
 
-            gpsEnabled.observe(viewLifecycleOwner, Observer {
-                it?.let {
-                    googleMapPlus.gpsOn = it
-                }
-            })
+            internetEnabled.observe(viewLifecycleOwner) {
+                googleMapPlus.internetOn = it
+            }
 
-            internetEnabled.observe(viewLifecycleOwner, Observer {
-                it?.let {
-                    googleMapPlus.internetOn = it
-                }
-            })
-
-            markers.observe(viewLifecycleOwner, Observer {
-                it?.let {
-                    when (it.status) {
-                        Status.RESETED -> {
-                            _markers.forEach { it.remove() }
-                            _markers.clear()
-                        }
-                        Status.ADDED_ELEMENT -> {
-                            _markers.add(googleMapPlus.addMarker(
+            markers.observe(viewLifecycleOwner) {
+                when (it.status) {
+                    Status.RESET -> {
+                        _markers.forEach { it.remove() }
+                        _markers.clear()
+                    }
+                    Status.ADDED_ELEMENT -> {
+                        _markers.add(
+                            googleMapPlus.addMarker(
                                 MarkerOptions()
                                     .position(it.list.last())
                                     .icon(
-                                        if(it.amSpecialLevel == 0)
-                                            BitmapDescriptorFactory.defaultMarker((_markers.size * 10).toFloat() % 360)
-                                         else if (it.amSpecialLevel == 2)
-                                            BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
-                                        else if (it.amSpecialLevel == 3)
-                                            BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
-                                        else
-                                            BitmapDescriptorFactory.defaultMarker((_markers.size * 10).toFloat() % 360)
-
+                                        when (it.amSpecialLevel) {
+                                            0 -> BitmapDescriptorFactory.defaultMarker((_markers.size * 10).toFloat() % 360)
+                                            2 -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                                            3 -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
+                                            else -> BitmapDescriptorFactory.defaultMarker((_markers.size * 10).toFloat() % 360)
+                                        }
                                     )
-                            ))
-                        }
-                        Status.REMOVED_LAST_ELEMENT -> {
-                            _markers.removeLast().remove()
-                        }
-                        else -> {
-
-                        }
+                            )
+                        )
                     }
+                    Status.REMOVED_LAST_ELEMENT -> {
+                        _markers.removeLast().remove()
+                    }
+                    else -> { }
                 }
-            })
+            }
 
-            paths.observe(viewLifecycleOwner, Observer {
-                it?.let {
-                    when(it.status) {
-                        Status.ADDED_ELEMENT -> {
-                            Log.d("PATH", it.list.last().toString())
-                            _paths.add(googleMapPlus.addPath(
+            paths.observe(viewLifecycleOwner) {
+                when (it.status) {
+                    Status.ADDED_ELEMENT -> {
+                        _paths.add(
+                            googleMapPlus.addPath(
                                 it.list.last(),
                                 it.animate ?: false,
-                                googleMapPlus.getDefaultPolylineOptions().color(if(it.amSpecialLevel == 0) android.graphics.Color.BLACK else android.graphics.Color.RED)
-                            ))
-                            it.zoomToFit?.let { zoom ->
-                                if(zoom) {
-                                    googleMapPlus.zoomToFit(it.list.last(), animated = true)
-                                }
+                                googleMapPlus.getDefaultPolylineOptions()
+                                    .color(if (it.amSpecialLevel == 0) android.graphics.Color.BLACK else android.graphics.Color.RED)
+                            )
+                        )
+                        it.zoomToFit?.let { zoom ->
+                            if (zoom) {
+                                googleMapPlus.zoomToFit(it.list.last(), animated = true)
                             }
                         }
-                        Status.RESETED -> {
-                            _paths.forEach { it.remove() }
-                            _paths.clear()
-                        }
-                        Status.REMOVED_LAST_ELEMENT -> {
-                            _paths.removeLast().remove()
-                        }
-                        Status.ADDED_SEVERAL_ELEMENTS -> {
-                            _paths.addAll(googleMapPlus.addPaths(
+                    }
+                    Status.RESET -> {
+                        _paths.forEach { it.remove() }
+                        _paths.clear()
+                    }
+                    Status.REMOVED_LAST_ELEMENT -> {
+                        _paths.removeLast().remove()
+                    }
+                    Status.ADDED_SEVERAL_ELEMENTS -> {
+                        _paths.addAll(
+                            googleMapPlus.addPaths(
                                 it.list.takeLast(it.n!!),
                                 it.animate ?: false,
-                                googleMapPlus.getDefaultPolylineOptions().color(android.graphics.Color.RED)
-                            ))
-                        }
-                        else -> {
-
-                        }
+                                googleMapPlus.getDefaultPolylineOptions()
+                                    .color(android.graphics.Color.RED)
+                            )
+                        )
                     }
+                    else -> { }
                 }
-            })
+            }
 
-            displayCityName.observe(viewLifecycleOwner, Observer {
-                it?.let {
-                    if(it.display) {
-                        Toast.makeText(requireContext(), it.t, Toast.LENGTH_SHORT).show()
-                        viewModel.displayedCityName()
-                    }
+            displayCityName.observe(viewLifecycleOwner) {
+                if (it.display) {
+                    Toast.makeText(requireContext(), it.t, Toast.LENGTH_SHORT).show()
+                    viewModel.displayedCityName()
                 }
-            })
-
+            }
         }
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        map_custom.onCreate(savedInstanceState)
+        map_view_plus.onCreate(savedInstanceState)
     }
 
     override fun onStart() {
         super.onStart()
-        map_custom.onStart()
+        map_view_plus.onStart()
     }
 
     override fun onResume() {
         super.onResume()
-        map_custom.onResume();
+        map_view_plus.onResume();
     }
 
     override fun onStop() {
         super.onStop()
-        map_custom.onStop();
+        map_view_plus.onStop();
     }
 
     override fun onPause() {
         super.onPause()
-        map_custom.onPause()
+        map_view_plus.onPause()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        map_custom.onLowMemory()
+        map_view_plus.onLowMemory()
     }
-
-    //crashes the app
-    /*override fun onDestroy() {
-        super.onDestroy()
-        map_custom.onDestroy()
-    }*/
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        map_custom.onSaveInstanceState(outState)
+        map_view_plus.onSaveInstanceState(outState)
     }
 }

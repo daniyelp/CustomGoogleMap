@@ -1,11 +1,9 @@
 package com.example.customgooglemapexample.start
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -16,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.customgooglemapexample.R
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_start.*
 
 class StartFragment: Fragment(R.layout.fragment_start) {
@@ -26,9 +23,7 @@ class StartFragment: Fragment(R.layout.fragment_start) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         resetStates()
-
         view_compose_start.setContent {
             Buttons()
         }
@@ -43,10 +38,9 @@ class StartFragment: Fragment(R.layout.fragment_start) {
     @Composable
     private fun Buttons() {
         Column(
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .fillMaxSize()
+            verticalArrangement = Arrangement.Center
         ) {
             Button(
                 onClick = { navigateToDemoFragment(); demoButtonEnabled.value = false },
@@ -75,6 +69,5 @@ class StartFragment: Fragment(R.layout.fragment_start) {
     override fun onResume() {
         super.onResume()
         resetStates()
-        Log.d("RESUME", "RESUMING")
     }
 }

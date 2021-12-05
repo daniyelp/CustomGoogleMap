@@ -60,8 +60,7 @@ class MyLocationButton: ConstraintLayout {
             onClick = { onClick() },
             backgroundColor = Color.White,
             elevation = elevation(elevation, 0.dp),
-            modifier = Modifier
-                .padding(elevation + elevation)
+            modifier = Modifier.padding(elevation + elevation)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_my_location),
