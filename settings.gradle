@@ -1,6 +1,6 @@
 rootProject.name = "CustomGoogleMapExample"
 if (!System.env.JITPACK)
     include ':app'
-include ':custom-google-map'
+include ':google-map-plus'
 include ':snap-to-roads'
 include ':openstreetmap'

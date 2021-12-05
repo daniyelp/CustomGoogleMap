@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:id="@+id/layout_demo">
 
-    <com.example.custom_google_map.CustomMapView
+    <com.example.custom_google_map.MapViewPlus
         android:id="@+id/map_custom_demo"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

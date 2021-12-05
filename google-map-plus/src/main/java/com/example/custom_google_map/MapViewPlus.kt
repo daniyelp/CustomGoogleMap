@@ -19,7 +19,7 @@ import java.util.*
 
 
 @ExperimentalAnimationApi
-class CustomMapView: ConstraintLayout {
+class MapViewPlus: ConstraintLayout {
 
     constructor(context: Context): super(context)
     constructor(context: Context, attributes: AttributeSet): super(context, attributes)
@@ -51,6 +51,7 @@ class CustomMapView: ConstraintLayout {
                     onStatusChange()
                 }
             }
+
         var internetStatus : InternetStatus = InternetStatus.INTERNET_OFF
             private
             set(value) {
@@ -171,7 +172,7 @@ class CustomMapView: ConstraintLayout {
         }
     }
 
-    inner class CustomGoogleMap constructor(val googleMap: GoogleMap) {
+    inner class GoogleMapPlus constructor(val googleMap: GoogleMap) {
 
         private val statusController: StatusController
 
@@ -236,7 +237,6 @@ class CustomMapView: ConstraintLayout {
 
         @ExperimentalAnimationApi
         private fun updateStatusLine() {
-
             when(statusController.primaryStatus) {
                 StatusController.PrimaryStatus.INTERNET_OFF -> statusBar?.display("INTERNET IS OFF", R.color.gray, true)
                 StatusController.PrimaryStatus.GPS_OFF -> statusBar?.display("GPS IS OFF", R.color.red, true)
@@ -303,22 +303,17 @@ class CustomMapView: ConstraintLayout {
             fun getPosition() = lastLatLng!!
 
             fun shouldAnimate() =
-                ! ( penultimateLocationStatus == StatusController.LocationStatus.ACQUIRING_LOCATION && statusController.locationStatus == StatusController.LocationStatus.LOCATION_RETRIEVED)
+                !( penultimateLocationStatus == StatusController.LocationStatus.ACQUIRING_LOCATION && statusController.locationStatus == StatusController.LocationStatus.LOCATION_RETRIEVED)
 
-            if(lastLatLng == null) {
-                return
-            }
+            if(lastLatLng == null) return
 
             if(locationMarker == null) {
-
                 //create a new marker at lastLatLng and with the color based on tracking
                 val markerOptions = MarkerOptions()
                     .anchor(0.5f, 0.5f)
                     .position(getPosition())
                     .icon(getIcon(getColor()))
-
                 locationMarker = googleMap.addMarker(markerOptions)
-
             } else {
                 updateMarkerColor(locationMarker!!, getColor())
                 if(shouldAnimate()) {
@@ -329,14 +324,12 @@ class CustomMapView: ConstraintLayout {
             }
 
             penultimateLocationStatus = statusController.locationStatus
-
         }
 
         private fun updateCamera() {
             if(lastLatLng == null) {
                 return
             }
-
             if(myLocationButton?.center == true) {
                 zoomTo(lastLatLng!!, true)
             }
@@ -367,7 +360,6 @@ class CustomMapView: ConstraintLayout {
             animated: Boolean = false,
             polylineOptions: PolylineOptions = getDefaultPolylineOptions()
         ): AnimatedPolyline {
-
             val polyline = AnimatedPolyline(
                 googleMap,
                 path,
@@ -435,10 +427,9 @@ class CustomMapView: ConstraintLayout {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
             }
         }
-
     }
 
-    private lateinit var customGoogleMap: CustomGoogleMap
+    private lateinit var googleMapPlus: GoogleMapPlus
 
     var myLocationButton: MyLocationButton? = null
     var statusBar: StatusBar? = null
@@ -448,16 +439,15 @@ class CustomMapView: ConstraintLayout {
         inflate(context, R.layout.map_view_custom, this)
     }
 
-    fun getCustomMapAsync(onCustomMapReadyCallback : (CustomGoogleMap) -> Unit) {
+    fun getMapAsync(onCustomMapReadyCallback : (GoogleMapPlus) -> Unit) {
         map_view.getMapAsync {
-            customGoogleMap = CustomGoogleMap(it)
-            onCustomMapReadyCallback(customGoogleMap)
+            googleMapPlus = GoogleMapPlus(it)
+            onCustomMapReadyCallback(googleMapPlus)
         }
     }
 
     fun onCreate(savedInstanceState: Bundle?) {
         map_view.onCreate(savedInstanceState)
-
     }
 
     fun onStart() {

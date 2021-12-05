@@ -40,7 +40,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideSnapToRoads(@ApplicationContext context: Context) : SnapToRoads{
+    fun provideSnapToRoads() : SnapToRoads{
         val apiKey = BuildConfig.GMAPS_API_KEY
         return SnapToRoads(apiKey)
     }

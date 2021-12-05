@@ -19,9 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -31,7 +29,7 @@ import androidx.compose.ui.unit.*
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.gms.maps.MapView
 import kotlinx.android.synthetic.main.selector_map_type.view.*
 
 @ExperimentalAnimationApi
@@ -40,28 +38,25 @@ class MapTypeSelector: ConstraintLayout {
     constructor(context: Context): super(context)
     constructor(context: Context, attributes: AttributeSet): super(context, attributes)
 
-    //I do this strange thing below so that I can call a function right away after customGoogleMap
-    //has been initialized
-    //You can't use a custom setter for a lateinit var
-    private var _customGoogleMap: CustomMapView.CustomGoogleMap? = null
+    private var _googleMapPlus: MapViewPlus.GoogleMapPlus? = null
         set(value) {
             field = value
             selectDefaultType()
         }
-    var customGoogleMap: CustomMapView.CustomGoogleMap
-        get() = _customGoogleMap ?: throw UninitializedPropertyAccessException("customGoogleMap was not initialized")
+    var googleMapPlus: MapViewPlus.GoogleMapPlus
+        get() = _googleMapPlus ?: throw UninitializedPropertyAccessException("customGoogleMap was not initialized")
         set(value) {
-            _customGoogleMap = value
+            _googleMapPlus = value
         }
 
     private fun selectDefaultType() {
-        customGoogleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+        googleMapPlus.mapType = GoogleMap.MAP_TYPE_NORMAL
     }
     private fun selectTerrainType() {
-        customGoogleMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
+        googleMapPlus.mapType = GoogleMap.MAP_TYPE_TERRAIN
     }
     private fun selectSatelliteType() {
-        customGoogleMap.mapType = GoogleMap.MAP_TYPE_SATELLITE
+        googleMapPlus.mapType = GoogleMap.MAP_TYPE_SATELLITE
     }
 
     init {

@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -27,7 +26,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import com.example.custom_google_map.CustomMapView
+import com.example.custom_google_map.MapViewPlus
 import com.example.customgooglemapexample.R
 import com.example.customgooglemapexample.databinding.FragmentMineBinding
 import com.example.customgooglemapexample.util.Status
@@ -43,7 +42,7 @@ class MyFragment: Fragment() {
     private lateinit var binding: FragmentMineBinding
     private val viewModel : MyViewModel by viewModels()
 
-    private lateinit var customGoogleMap: CustomMapView.CustomGoogleMap
+    private lateinit var googleMapPlus: MapViewPlus.GoogleMapPlus
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,7 +65,6 @@ class MyFragment: Fragment() {
 
     @Composable
     fun Buttons(viewModel: MyViewModel) {
-
         val connectEnabled by viewModel.connectEnabled.observeAsState(false)
         val connect2Enabled by viewModel.connect2Enabled.observeAsState(false)
         val addStartMarkerEnabled by viewModel.addStartMarkerEnabled.observeAsState(false)
@@ -74,10 +72,8 @@ class MyFragment: Fragment() {
         val snapToRoadsEnabled by viewModel.snapToRoadsEnabled.observeAsState(false)
         val osmEnabled by viewModel.osmEnabled.observeAsState(false)
         val splitEnabled by viewModel.splitEnabled.observeAsState(false)
-
         val undoMarkerEnabled by viewModel.undoMarkerEnabled.observeAsState(false)
         val undoPathEnabled by viewModel.undoPathEnabled.observeAsState(false)
-
 
         Card(
             modifier = Modifier
@@ -229,14 +225,14 @@ class MyFragment: Fragment() {
         map_custom.myLocationButton = button_my_location
         map_custom.statusBar = line_primary_status
         map_custom.mapTypeSelector = selector_map_type
-        map_custom.getCustomMapAsync {
-            customGoogleMap = it
-            selector_map_type.customGoogleMap = it
+        map_custom.getMapAsync {
+            googleMapPlus = it
+            selector_map_type.googleMapPlus = it
             subscribeToObservers()
-            customGoogleMap.setOnMapClickListener { latLng ->
+            googleMapPlus.setOnMapClickListener { latLng ->
                 viewModel.onNewMarker(latLng)
             }
-            customGoogleMap.setOnMapLongClickListener { latLng ->
+            googleMapPlus.setOnMapLongClickListener { latLng ->
                 viewModel.onNewLocation(latLng)
             }
             view_compose_mine.setContent {
@@ -254,19 +250,19 @@ class MyFragment: Fragment() {
 
             lastLocation.observe(viewLifecycleOwner, Observer {
                 it?.let {
-                    customGoogleMap.newLatLng(it)
+                    googleMapPlus.newLatLng(it)
                 }
             })
 
             gpsEnabled.observe(viewLifecycleOwner, Observer {
                 it?.let {
-                    customGoogleMap.gpsOn = it
+                    googleMapPlus.gpsOn = it
                 }
             })
 
             internetEnabled.observe(viewLifecycleOwner, Observer {
                 it?.let {
-                    customGoogleMap.internetOn = it
+                    googleMapPlus.internetOn = it
                 }
             })
 
@@ -278,7 +274,7 @@ class MyFragment: Fragment() {
                             _markers.clear()
                         }
                         Status.ADDED_ELEMENT -> {
-                            _markers.add(customGoogleMap.addMarker(
+                            _markers.add(googleMapPlus.addMarker(
                                 MarkerOptions()
                                     .position(it.list.last())
                                     .icon(
@@ -309,14 +305,14 @@ class MyFragment: Fragment() {
                     when(it.status) {
                         Status.ADDED_ELEMENT -> {
                             Log.d("PATH", it.list.last().toString())
-                            _paths.add(customGoogleMap.addPath(
+                            _paths.add(googleMapPlus.addPath(
                                 it.list.last(),
                                 it.animate ?: false,
-                                customGoogleMap.getDefaultPolylineOptions().color(if(it.amSpecialLevel == 0) android.graphics.Color.BLACK else android.graphics.Color.RED)
+                                googleMapPlus.getDefaultPolylineOptions().color(if(it.amSpecialLevel == 0) android.graphics.Color.BLACK else android.graphics.Color.RED)
                             ))
                             it.zoomToFit?.let { zoom ->
                                 if(zoom) {
-                                    customGoogleMap.zoomToFit(it.list.last(), animated = true)
+                                    googleMapPlus.zoomToFit(it.list.last(), animated = true)
                                 }
                             }
                         }
@@ -328,10 +324,10 @@ class MyFragment: Fragment() {
                             _paths.removeLast().remove()
                         }
                         Status.ADDED_SEVERAL_ELEMENTS -> {
-                            _paths.addAll(customGoogleMap.addPaths(
+                            _paths.addAll(googleMapPlus.addPaths(
                                 it.list.takeLast(it.n!!),
                                 it.animate ?: false,
-                                customGoogleMap.getDefaultPolylineOptions().color(android.graphics.Color.RED)
+                                googleMapPlus.getDefaultPolylineOptions().color(android.graphics.Color.RED)
                             ))
                         }
                         else -> {

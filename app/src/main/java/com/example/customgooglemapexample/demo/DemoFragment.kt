@@ -10,7 +10,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.fragment.app.Fragment
-import com.example.custom_google_map.CustomMapView
+import com.example.custom_google_map.MapViewPlus
 import com.example.customgooglemapexample.BuildConfig
 import com.example.customgooglemapexample.R
 import com.example.openstreetmap.Osm
@@ -24,7 +24,7 @@ import kotlinx.coroutines.*
 @ExperimentalAnimationApi
 class DemoFragment: Fragment(R.layout.fragment_demo) {
 
-    private lateinit var customGoogleMap: CustomMapView.CustomGoogleMap
+    private lateinit var googleMapPlus: MapViewPlus.GoogleMapPlus
     private lateinit var snapToRoads : SnapToRoads
     private lateinit var osm: Osm
 
@@ -33,9 +33,9 @@ class DemoFragment: Fragment(R.layout.fragment_demo) {
         map_custom_demo.myLocationButton = button_my_location_demo
         map_custom_demo.statusBar = line_primary_status_demo
         map_custom_demo.mapTypeSelector = selector_map_type_demo
-        map_custom_demo.getCustomMapAsync {
-            customGoogleMap = it
-            selector_map_type_demo.customGoogleMap = it
+        map_custom_demo.getMapAsync {
+            googleMapPlus = it
+            selector_map_type_demo.googleMapPlus = it
 
             snapToRoads = SnapToRoads(BuildConfig.GMAPS_API_KEY)
             osm = Osm()
@@ -68,13 +68,13 @@ class DemoFragment: Fragment(R.layout.fragment_demo) {
         val satelliteMapTypeY = BuildConfig.SATELLITE_MAP_TYPE_Y
 
         GlobalScope.launch {
-            customGoogleMap.durationBetweenLocationUpdates = 1200L
-            customGoogleMap.internetOn = true
-            customGoogleMap.gpsOn = false
+            googleMapPlus.durationBetweenLocationUpdates = 1200L
+            googleMapPlus.internetOn = true
+            googleMapPlus.gpsOn = false
 
             delay(1700)
 
-            customGoogleMap.gpsOn = true
+            googleMapPlus.gpsOn = true
 
             delay(1000)
 
@@ -82,23 +82,23 @@ class DemoFragment: Fragment(R.layout.fragment_demo) {
 
             delay(500)
 
-            customGoogleMap.animationDuration = 500
+            googleMapPlus.animationDuration = 500
 
             requireActivity().runOnUiThread{
-                customGoogleMap.newLatLng(berlin0[0])
+                googleMapPlus.newLatLng(berlin0[0])
             }
 
             delay(1000)
 
             requireActivity().runOnUiThread{
-                customGoogleMap.newLatLng(berlin0[0])
+                googleMapPlus.newLatLng(berlin0[0])
             }
 
             for(i in 1 until berlin0.size) {
                 delay(1000)
                 requireActivity().runOnUiThread{
-                    customGoogleMap.newLatLng(berlin0[i])
-                    customGoogleMap.addPath(listOf(berlin0[i - 1], berlin0[i]), animated = true)
+                    googleMapPlus.newLatLng(berlin0[i])
+                    googleMapPlus.addPath(listOf(berlin0[i - 1], berlin0[i]), animated = true)
                 }
             }
 
@@ -107,7 +107,7 @@ class DemoFragment: Fragment(R.layout.fragment_demo) {
             async {
                 while(run) {
                     delay(1000)
-                    requireActivity().runOnUiThread{ customGoogleMap.newLatLng(berlin0.last()) }
+                    requireActivity().runOnUiThread{ googleMapPlus.newLatLng(berlin0.last()) }
                 }
             }
 
@@ -143,16 +143,16 @@ class DemoFragment: Fragment(R.layout.fragment_demo) {
 
             delay(4000)
 
-            customGoogleMap.animationDuration = 400
+            googleMapPlus.animationDuration = 400
 
-            requireActivity().runOnUiThread{ customGoogleMap.newLatLng(berlin1[0]) }
+            requireActivity().runOnUiThread{ googleMapPlus.newLatLng(berlin1[0]) }
 
             delay(700)
 
             for(i in 1 until berlin1.size) {
                 requireActivity().runOnUiThread{
-                    customGoogleMap.newLatLng(berlin1[i])
-                    customGoogleMap.addPath(listOf(berlin1[i - 1], berlin1[i]), animated = true)
+                    googleMapPlus.newLatLng(berlin1[i])
+                    googleMapPlus.addPath(listOf(berlin1[i - 1], berlin1[i]), animated = true)
                 }
                 delay(700)
             }
@@ -165,7 +165,7 @@ class DemoFragment: Fragment(R.layout.fragment_demo) {
 
             async {
                 while(run2) {
-                    requireActivity().runOnUiThread{ customGoogleMap.newLatLng(berlin1.last()) }
+                    requireActivity().runOnUiThread{ googleMapPlus.newLatLng(berlin1.last()) }
                     delay(700)
                 }
             }
@@ -173,32 +173,32 @@ class DemoFragment: Fragment(R.layout.fragment_demo) {
             delay(400)
 
             requireActivity().runOnUiThread {
-                customGoogleMap.zoomToFit(berlin1, animated = true)
+                googleMapPlus.zoomToFit(berlin1, animated = true)
             }
 
             delay(400)
 
             val snappedPath = snapToRoads.getSnappedToRoadsPath(berlin1)
 
-            customGoogleMap.animationDuration = 1000
+            googleMapPlus.animationDuration = 1000
             requireActivity().runOnUiThread{
-                customGoogleMap.addPath(
+                googleMapPlus.addPath(
                     snappedPath,
                     animated = true,
-                    polylineOptions = customGoogleMap.getDefaultPolylineOptions().color(android.graphics.Color.RED)
+                    polylineOptions = googleMapPlus.getDefaultPolylineOptions().color(android.graphics.Color.RED)
                 )
             }
 
             delay(800)
 
             requireActivity().runOnUiThread {
-                customGoogleMap.zoomToFit(snappedPath, animated = true, paddingPx = 150)
+                googleMapPlus.zoomToFit(snappedPath, animated = true, paddingPx = 150)
             }
 
             delay(800)
 
             requireActivity().runOnUiThread() {
-                customGoogleMap.addMarker(
+                googleMapPlus.addMarker(
                     MarkerOptions()
                         .position(snappedPath.first())
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
@@ -208,7 +208,7 @@ class DemoFragment: Fragment(R.layout.fragment_demo) {
             delay(500)
 
             requireActivity().runOnUiThread() {
-                customGoogleMap.addMarker(
+                googleMapPlus.addMarker(
                     MarkerOptions()
                         .position(snappedPath.last())
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
@@ -221,40 +221,40 @@ class DemoFragment: Fragment(R.layout.fragment_demo) {
             val (city, boundary) = osm.getCityWithBoundary(latLng.latitude, latLng.longitude)
 
             requireActivity().runOnUiThread() {
-            customGoogleMap.zoomToFit(boundary, animated = true)
+            googleMapPlus.zoomToFit(boundary, animated = true)
             }
 
-            delay(1500)
+            delay(2300)
 
-            customGoogleMap.animationDuration = 2000
+            googleMapPlus.animationDuration = 2000
             requireActivity().runOnUiThread() {
             //Toast.makeText(requireActivity(), city, Toast.LENGTH_SHORT).show()
-            customGoogleMap.addPath(boundary, animated = true, polylineOptions = customGoogleMap.getDefaultPolylineOptions().color(android.graphics.Color.RED))
+            googleMapPlus.addPath(boundary, animated = true, polylineOptions = googleMapPlus.getDefaultPolylineOptions().color(android.graphics.Color.RED))
             }
 
             delay(1000)
 
             requireActivity().runOnUiThread{
                 changeWifiStatus(isEnabled = false)
-                customGoogleMap.internetOn = false
+                googleMapPlus.internetOn = false
             }
 
             delay(2000)
 
             run2 = false
 
-            customGoogleMap.durationBetweenLocationUpdates = 1200L
+            googleMapPlus.durationBetweenLocationUpdates = 1200L
 
-            customGoogleMap.animationDuration = 0
+            googleMapPlus.animationDuration = 0
 
             requireActivity().runOnUiThread{
-                customGoogleMap.newLatLng(berlin2[0])
+                googleMapPlus.newLatLng(berlin2[0])
             }
 
             delay(1000)
 
             requireActivity().runOnUiThread{
-                customGoogleMap.newLatLng(berlin2[0])
+                googleMapPlus.newLatLng(berlin2[0])
             }
 
             touch(myLocationButtonX, myLocationButtonY)
@@ -262,18 +262,18 @@ class DemoFragment: Fragment(R.layout.fragment_demo) {
             delay(1000)
 
             requireActivity().runOnUiThread{
-                customGoogleMap.newLatLng(berlin2[0])
+                googleMapPlus.newLatLng(berlin2[0])
             }
 
             delay(1000)
 
-            customGoogleMap.animationDuration = 500
+            googleMapPlus.animationDuration = 500
 
             async {
                 delay(4000)
                 requireActivity().runOnUiThread{
                     changeWifiStatus(isEnabled = true)
-                    customGoogleMap.internetOn = true
+                    googleMapPlus.internetOn = true
                 }
             }
 
@@ -286,8 +286,8 @@ class DemoFragment: Fragment(R.layout.fragment_demo) {
 
             for(i in 1 until berlin2.size) {
                 requireActivity().runOnUiThread{
-                    customGoogleMap.newLatLng(berlin2[i])
-                    customGoogleMap.addPath(listOf(berlin2[i - 1], berlin2[i]), animated = true)
+                    googleMapPlus.newLatLng(berlin2[i])
+                    googleMapPlus.addPath(listOf(berlin2[i - 1], berlin2[i]), animated = true)
                 }
                 delay(1000)
             }

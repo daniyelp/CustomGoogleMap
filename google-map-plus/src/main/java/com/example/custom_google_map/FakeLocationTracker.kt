@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.maps.model.LatLng
 import kotlin.concurrent.thread
 
-//would have been better practice to use an interface
 class FakeLocationTracker {
 
     private val _lastLocation = MutableLiveData<LatLng>()

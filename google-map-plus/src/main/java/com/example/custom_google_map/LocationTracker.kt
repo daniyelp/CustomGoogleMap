@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Looper
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,20 +12,26 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import java.lang.Exception
 
-class LocationTracker constructor(private val context: Context) {
+class LocationTracker constructor(
+    val context: Context,
+    interval: Long = 2000L,
+    fastestInterval: Long = 1000L
+) {
 
     private val _receivingLocationUpdates = MutableLiveData<Boolean>()
-    val receivingLocationUpdates : LiveData<Boolean> = _receivingLocationUpdates
+    val receivingLocationUpdates: LiveData<Boolean> = _receivingLocationUpdates
 
     private val _lastLocation = MutableLiveData<LatLng>()
-    val lastLocation : LiveData<LatLng> = _lastLocation
+    val lastLocation: LiveData<LatLng> = _lastLocation
 
-    private val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
+    private val fusedLocationProviderClient =
+        LocationServices.getFusedLocationProviderClient(context)
 
     private val locationRequest = LocationRequest().apply {
-        interval = 2000L
-        fastestInterval = 1000L
+        this.interval = interval
+        this.fastestInterval = fastestInterval
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
@@ -40,8 +45,20 @@ class LocationTracker constructor(private val context: Context) {
         }
     }
 
+    class LocationPermissionsNotGrantedException(message: String? = null) : Exception(message)
+
     fun startLocationUpdates() {
         _receivingLocationUpdates.value = true
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            throw LocationPermissionsNotGrantedException()
+        }
         fusedLocationProviderClient.requestLocationUpdates(
             locationRequest,
             locationCallback,
@@ -53,5 +70,4 @@ class LocationTracker constructor(private val context: Context) {
         _receivingLocationUpdates.value = false
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
-
 }

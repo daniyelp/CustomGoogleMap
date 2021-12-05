@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:background="@color/design_default_color_background">
 
-        <com.example.custom_google_map.CustomMapView
+        <com.example.custom_google_map.MapViewPlus
             android:id="@+id/map_custom"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
