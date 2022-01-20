@@ -44,7 +44,7 @@ class MapTypeSelector: ConstraintLayout {
             selectDefaultType()
         }
     var googleMapPlus: MapViewPlus.GoogleMapPlus
-        get() = _googleMapPlus ?: throw UninitializedPropertyAccessException("customGoogleMap was not initialized")
+        get() = _googleMapPlus ?: throw UninitializedPropertyAccessException("googleMapPlus was not initialized")
         set(value) {
             _googleMapPlus = value
         }

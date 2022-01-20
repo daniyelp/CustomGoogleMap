@@ -149,15 +149,15 @@ class MapViewPlus: ConstraintLayout {
             }
 
         private fun updatePrimaryStatus() {
-            when(locationStatus) {
-                LocationStatus.GPS_OFF -> primaryStatus = PrimaryStatus.GPS_OFF
-                LocationStatus.ACQUIRING_LOCATION -> primaryStatus = PrimaryStatus.ACQUIRING_LOCATION
-                LocationStatus.LOCATION_RETRIEVED -> primaryStatus = PrimaryStatus.LOCATION_RETRIEVED
+            primaryStatus = when(locationStatus) {
+                LocationStatus.GPS_OFF -> PrimaryStatus.GPS_OFF
+                LocationStatus.ACQUIRING_LOCATION -> PrimaryStatus.ACQUIRING_LOCATION
+                LocationStatus.LOCATION_RETRIEVED -> PrimaryStatus.LOCATION_RETRIEVED
                 LocationStatus.CHILLING -> {
                     if (internetStatus == InternetStatus.INTERNET_OFF) {
-                        primaryStatus = PrimaryStatus.INTERNET_OFF
+                        PrimaryStatus.INTERNET_OFF
                     } else {
-                        primaryStatus = PrimaryStatus.CHILLING
+                        PrimaryStatus.CHILLING
                     }
                 }
             }
@@ -186,7 +186,6 @@ class MapViewPlus: ConstraintLayout {
         private var lastLatLng: LatLng? = null
             set(value) {
                 field = value
-
                 statusController.newLocationAvailable()
                 updateCamera()
                 updateLocationMarker()
@@ -207,10 +206,21 @@ class MapViewPlus: ConstraintLayout {
         var animationDuration = 1000L
 
         var durationBetweenLocationUpdates = 2000L
-        set(value) {
-            field = value
-            statusController.durationBetweenLocationUpdates = value
-        }
+            set(value) {
+                field = value
+                statusController.durationBetweenLocationUpdates = value
+            }
+
+        var darkThemeOn: Boolean = false
+            set(value) {
+                field = value
+                googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                        context,
+                        if(value) R.raw.dark_map_style else R.raw.standard_map_style
+                    )
+                )
+            }
 
         init {
             googleMap.uiSettings.isCompassEnabled = false
@@ -333,25 +343,9 @@ class MapViewPlus: ConstraintLayout {
             }
         }
 
-        private fun getBoundsToFit(path: List<LatLng>) : LatLngBounds {
-            val boundsBuilder = LatLngBounds.builder()
-            for (latLng in path) {
-                boundsBuilder.include(latLng)
-            }
-            return boundsBuilder.build()
-        }
-
         fun newLatLng(latLng: LatLng) {
             lastLatLng = latLng
         }
-
-        fun onSnapshotReady(onSnapshotReadyCallback : (Bitmap) -> Unit) {
-            googleMap.snapshot {
-                onSnapshotReadyCallback(it)
-            }
-        }
-
-        fun addMarker(markerOptions: MarkerOptions) = googleMap.addMarker(markerOptions)
 
         fun addPath(
             path: List<LatLng>,
@@ -392,6 +386,13 @@ class MapViewPlus: ConstraintLayout {
 
         @JvmName("zoomToFit1")
         fun zoomToFit(path: List<LatLng>, animated: Boolean = false, paddingPx: Int = 50) {
+            fun getBoundsToFit(path: List<LatLng>) : LatLngBounds {
+                val boundsBuilder = LatLngBounds.builder()
+                for (latLng in path) {
+                    boundsBuilder.include(latLng)
+                }
+                return boundsBuilder.build()
+            }
             if(animated) {
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(getBoundsToFit(path), paddingPx))
             } else {
@@ -425,6 +426,8 @@ class MapViewPlus: ConstraintLayout {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
             }
         }
+
+        fun addMarker(markerOptions: MarkerOptions) = googleMap.addMarker(markerOptions)
     }
 
     private lateinit var googleMapPlus: GoogleMapPlus
