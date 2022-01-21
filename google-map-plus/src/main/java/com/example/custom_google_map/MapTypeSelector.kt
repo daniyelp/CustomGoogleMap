@@ -13,14 +13,12 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.FloatingActionButtonDefaults.elevation
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -29,14 +27,48 @@ import androidx.compose.ui.unit.*
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
 import kotlinx.android.synthetic.main.selector_map_type.view.*
 
 @ExperimentalAnimationApi
 class MapTypeSelector: ConstraintLayout {
+    constructor(context: Context): super(context) {
+        initCompose()
+    }
+    constructor(context: Context, attributes: AttributeSet): super(context, attributes) {
+        initCompose()
+    }
+    private var elevation: Dp = 8.dp
+    private var padding: Dp = 8.dp
+    private var cardShape: Shape = RoundedCornerShape(5)
+    private var cardItemShape: Shape = RoundedCornerShape(20)
+    private var surfaceColor: Color = Color.White
+    private var onSurfaceColor: Color = Color(0xFF3C4043)
+    private var selectedColor: Color = Color(0xFF1A73E8)
+    constructor(
+        context: Context,
+        elevation: Dp = 8.dp,
+        padding: Dp = 8.dp,
+        cardShape: Shape = RoundedCornerShape(5),
+        cardItemShape: Shape = RoundedCornerShape(20),
+        surfaceColor: Color = Color.White,
+        onSurfaceColor: Color = Color(0xFF3C4043),
+        selectedColor: Color = Color(0xFF1A73E8),
+    ): super(context) {
+        this.elevation = elevation
+        this.padding = padding
+        this.cardShape = cardShape
+        this.cardItemShape = cardItemShape
+        this.surfaceColor = surfaceColor
+        this.onSurfaceColor = onSurfaceColor
+        this.selectedColor = selectedColor
+        initCompose()
+    }
 
-    constructor(context: Context): super(context)
-    constructor(context: Context, attributes: AttributeSet): super(context, attributes)
+    private fun initCompose() {
+        view_compose_map_type_selector.setContent {
+            MapTypeSelector()
+        }
+    }
 
     private var _googleMapPlus: MapViewPlus.GoogleMapPlus? = null
         set(value) {
@@ -61,20 +93,16 @@ class MapTypeSelector: ConstraintLayout {
 
     init {
         inflate(context, R.layout.selector_map_type, this)
-
-        view_compose_map_type_selector.setContent {
-            MapTypeSelector()
-        }
     }
 
-    private val icon = mutableStateOf(R.drawable.ic_layers)
-    private val selectorVisible = mutableStateOf(false)
-    private val defaultTypeSelected = mutableStateOf(true )
-    private val satelliteTypeSelected = mutableStateOf(false)
-    private val terrainTypeSelected = mutableStateOf(false)
+    private var toggleIcon by mutableStateOf(R.drawable.ic_layers)
+    private var selectorVisible by mutableStateOf(false)
+    private var defaultTypeSelected by mutableStateOf(true )
+    private var satelliteTypeSelected by mutableStateOf(false)
+    private var terrainTypeSelected by mutableStateOf(false)
 
     @Composable
-    private fun MapTypeSelectorItem(icon: Int, text: String, selected: MutableState<Boolean>, onClick: () -> Unit) {
+    private fun MapTypeSelectorItem(icon: Int, text: String, selected: Boolean, onClick: () -> Unit) {
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -83,17 +111,17 @@ class MapTypeSelector: ConstraintLayout {
                 contentDescription = text,
                 modifier = Modifier
                     .size(50.dp)
-                    .clip(RoundedCornerShape(20))
+                    .clip(cardItemShape)
                     .border(
-                        if (selected.value) 3.dp else 0.dp,
-                        if (selected.value) colorResource(R.color.maps_blue) else Color.White,
-                        RoundedCornerShape(20)
+                        width = if (selected) 3.dp else 0.dp,
+                        color = if (selected) selectedColor else surfaceColor,
+                        shape = cardItemShape
                     )
                     .clickable(onClick = onClick)
             )
             Text(
                 text = text,
-                color = if (selected.value) colorResource(R.color.maps_blue) else colorResource(R.color.maps_gray),
+                color = if (selected) selectedColor else onSurfaceColor,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 fontSize = 12.sp,
                 letterSpacing = 1.sp,
@@ -105,7 +133,7 @@ class MapTypeSelector: ConstraintLayout {
     
     @ExperimentalAnimationApi
     @Composable
-    fun MapTypeSelector(elevation : Dp = 8.dp) {
+    fun MapTypeSelector() {
         ConstraintLayout(
             modifier = Modifier
                 .width(300.dp)
@@ -115,45 +143,47 @@ class MapTypeSelector: ConstraintLayout {
 
             FloatingActionButton(
                 onClick = {
-                    icon.value = if (selectorVisible.value) R.drawable.ic_layers else R.drawable.ic_clear
-                    selectorVisible.value = !selectorVisible.value
+                    toggleIcon = if (selectorVisible) R.drawable.ic_layers else R.drawable.ic_clear
+                    selectorVisible = !selectorVisible
                 },
                 modifier = Modifier
                     .constrainAs(fab) {
                         top.linkTo(parent.top)
                         end.linkTo(parent.end)
                     }
-                    .padding(elevation)
+                    .padding(padding)
                     .size(40.dp),
-                elevation = elevation(elevation, 0.dp),
-                backgroundColor = Color.White,
+                elevation = elevation(
+                    defaultElevation = elevation,
+                    pressedElevation = elevation * 2),
+                backgroundColor = surfaceColor,
             ) {
                 Icon(
-                    painter = painterResource(id = icon.value),
-                    contentDescription = "map type selector"
+                    painter = painterResource(id = toggleIcon),
+                    tint = onSurfaceColor,
+                    contentDescription = null
                 )
             }
-            if (selectorVisible.value) {
+            if (selectorVisible) {
                 Card(
                     modifier = Modifier
                         .constrainAs(card) {
                             top.linkTo(parent.top)
                             end.linkTo(fab.start)
                         }
-                        .padding(top = elevation, start = elevation, bottom = elevation),
-                    shape = RoundedCornerShape(5),
+                        .padding(top = padding, start = padding, bottom = padding),
+                    shape = cardShape,
                     elevation = elevation,
-                    backgroundColor = Color.White
+                    backgroundColor = surfaceColor
                 ) {
                     Column(
-                        modifier = Modifier
-                            .padding(8.dp),
+                        modifier = Modifier.padding(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
                             text = "Map Type",
                             fontSize = 16.sp,
-                            color = colorResource(R.color.maps_gray),
+                            color = onSurfaceColor,
                             fontWeight = FontWeight.W600,
                             letterSpacing = 1.sp,
                             fontFamily = FontFamily(Font(R.font.product_sans_regular)),
@@ -166,9 +196,9 @@ class MapTypeSelector: ConstraintLayout {
                                 text = "Default",
                                 defaultTypeSelected
                             ) {
-                                defaultTypeSelected.value = true
-                                terrainTypeSelected.value = false
-                                satelliteTypeSelected.value = false
+                                defaultTypeSelected = true
+                                terrainTypeSelected = false
+                                satelliteTypeSelected = false
                                 selectDefaultType()
                             }
                             MapTypeSelectorItem(
@@ -176,9 +206,9 @@ class MapTypeSelector: ConstraintLayout {
                                 text = "Satellite",
                                 satelliteTypeSelected
                             ) {
-                                defaultTypeSelected.value = false
-                                satelliteTypeSelected.value = true
-                                terrainTypeSelected.value = false
+                                defaultTypeSelected = false
+                                satelliteTypeSelected = true
+                                terrainTypeSelected = false
                                 selectSatelliteType()
                             }
                             MapTypeSelectorItem(
@@ -186,9 +216,9 @@ class MapTypeSelector: ConstraintLayout {
                                 text = "Terrain",
                                 terrainTypeSelected
                             ) {
-                                defaultTypeSelected.value = false
-                                satelliteTypeSelected.value = false
-                                terrainTypeSelected.value = true
+                                defaultTypeSelected = false
+                                satelliteTypeSelected = false
+                                terrainTypeSelected = true
                                 selectTerrainType()
                             }
                         }

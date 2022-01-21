@@ -202,7 +202,7 @@ class MyFragment : Fragment() {
         map_view_plus.getMapAsync { googleMapPlus ->
             googleMapPlus.animationDuration = 1000L
             googleMapPlus.durationBetweenLocationUpdates = 2000L
-            googleMapPlus.darkThemeOn = true
+            googleMapPlus.darkThemeOn = false
             this.googleMapPlus = googleMapPlus
             selector_map_type.googleMapPlus = googleMapPlus
             subscribeToObservers()
