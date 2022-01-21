@@ -2,7 +2,6 @@ package com.example.custom_google_map
 
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -338,7 +337,7 @@ class MapViewPlus: ConstraintLayout {
             if(lastLatLng == null) {
                 return
             }
-            if(myLocationButton?.center == true) {
+            if(myLocationButton?.centering == true) {
                 zoomTo(lastLatLng!!, true)
             }
         }

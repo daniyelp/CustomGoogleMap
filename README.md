@@ -25,7 +25,7 @@ GMAPS_API_KEY=AI....XAB
 ### `google-map-plus` module
 Using `GoogleMapPlus` is almost the same as using the original `GoogleMap`. One very important difference between the two is that `GoogleMapPlus` must be informed of the current `LatLng` location, the status of the `GPS` and the status of the `Internet` in order for it to function properly. You must also tell `GoogleMapPlus` what's the expected milliseconds interval between the location updates that it is going to receive.
 
-Below, any of `StatusBar`, `MapTypeSelector` or `MyLocationButton` can be omitted. 
+Below, any of `StatusBar`, `MapTypeSelector` or `MyLocationButton` can be omitted.
 
 In `XML`
 ```xml

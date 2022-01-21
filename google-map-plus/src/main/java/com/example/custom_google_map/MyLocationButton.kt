@@ -2,13 +2,10 @@ package com.example.custom_google_map
 
 import android.content.Context
 import android.util.AttributeSet
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.FloatingActionButtonDefaults.elevation
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -19,12 +16,34 @@ import androidx.compose.ui.unit.Dp
 
 class MyLocationButton: ConstraintLayout {
 
-    constructor(context: Context): super(context)
-    constructor(context: Context, attributes: AttributeSet): super(context, attributes)
+    constructor(context: Context): super(context) {
+        initCompose()
+    }
+    constructor(context: Context, attributes: AttributeSet): super(context, attributes) {
+        initCompose()
+    }
+    var elevation by mutableStateOf(8.dp)
+    var padding by mutableStateOf(16.dp)
+    var backgroundColor by mutableStateOf(Color.White)
+    var disabledColor by mutableStateOf(Color(0xFF3C4043))
+    var enabledColor by mutableStateOf(Color.Blue)
+    constructor(
+        context: Context,
+        elevation: Dp = 8.dp,
+        padding: Dp = 16.dp,
+        backgroundColor: Color = Color.White,
+        disabledColor: Color = Color(0xFF3C4043),
+        enabledColor: Color = Color.Blue
+    ): super(context) {
+        this.elevation = elevation
+        this.padding = padding
+        this.backgroundColor = backgroundColor
+        this.disabledColor = disabledColor
+        this.enabledColor = enabledColor
+        initCompose()
+    }
 
-    init {
-        inflate(context, R.layout.button_my_location, this)
-
+    private fun initCompose() {
         view_compose_my_location_button.setContent {
             MyLocationButton()
         }
@@ -33,44 +52,48 @@ class MyLocationButton: ConstraintLayout {
         }
     }
 
-    private val tint = mutableStateOf(Color.Black)
+    init {
+        inflate(context, R.layout.button_my_location, this)
+    }
 
-    var onCenter : () -> Unit = {}
-    var onDecenter : () -> Unit = {}
+    private var tint by mutableStateOf(disabledColor)
 
-    var center: Boolean = false
+    internal var onCenter : () -> Unit = {}
+    internal var onDecenter : () -> Unit = {}
+
+    var centering: Boolean = false
         private set(value) {
             field = value
             if (value) {
-                tint.value = Color.Blue
+                tint = enabledColor
                 onCenter()
             } else {
-                tint.value = Color.Black
+                tint = disabledColor
                 onDecenter()
             }
         }
 
-    fun decenter() {
-        center = false
+    internal fun decenter() {
+        centering = false
     }
 
     @Composable
-    fun MyLocationButton(elevation : Dp = 8.dp) {
+    private fun MyLocationButton() {
         FloatingActionButton(
             onClick = { onClick() },
-            backgroundColor = Color.White,
-            elevation = elevation(elevation, 0.dp),
-            modifier = Modifier.padding(elevation + elevation)
+            backgroundColor = backgroundColor,
+            elevation = elevation(elevation, elevation * 2),
+            modifier = Modifier.padding(padding)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_my_location),
-                tint = tint.value,
-                contentDescription = "my location button"
+                tint = tint,
+                contentDescription = null
             )
         }
     }
 
     private fun onClick() {
-        center = !center
+        centering = !centering
     }
 }
