@@ -141,8 +141,7 @@ class MapViewPlus: ConstraintLayout {
                         LocationStatus.GPS_OFF -> {
                             locationStatus = LocationStatus.ACQUIRING_LOCATION
                         }
-                        LocationStatus.ACQUIRING_LOCATION -> {} //no action
-                        LocationStatus.LOCATION_RETRIEVED -> {} //no action
+                        else -> {} //no action
                     }
                 }
             }
@@ -434,6 +433,12 @@ class MapViewPlus: ConstraintLayout {
     var myLocationButton: MyLocationButton? = null
     var statusBar: StatusBar? = null
     var mapTypeSelector: MapTypeSelector? = null
+        set(value) {
+            field = value
+            if(value != null && this::googleMapPlus.isInitialized) {
+                value.googleMapPlus = googleMapPlus
+            }
+        }
 
     init {
         inflate(context, R.layout.map_view_custom, this)
@@ -442,6 +447,7 @@ class MapViewPlus: ConstraintLayout {
     fun getMapAsync(onCustomMapReadyCallback : (GoogleMapPlus) -> Unit) {
         map_view.getMapAsync {
             googleMapPlus = GoogleMapPlus(it)
+            mapTypeSelector?.googleMapPlus = googleMapPlus
             onCustomMapReadyCallback(googleMapPlus)
         }
     }

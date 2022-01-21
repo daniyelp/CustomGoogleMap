@@ -204,7 +204,6 @@ class MyFragment : Fragment() {
             googleMapPlus.durationBetweenLocationUpdates = 2000L
             googleMapPlus.darkThemeOn = false
             this.googleMapPlus = googleMapPlus
-            selector_map_type.googleMapPlus = googleMapPlus
             subscribeToObservers()
             googleMapPlus.setOnMapClickListener { latLng ->
                 viewModel.onNewMarker(latLng)

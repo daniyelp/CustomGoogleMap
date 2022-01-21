@@ -35,11 +35,8 @@ class DemoFragment: Fragment(R.layout.fragment_demo) {
         map_custom_demo.mapTypeSelector = selector_map_type_demo
         map_custom_demo.getMapAsync {
             googleMapPlus = it
-            selector_map_type_demo.googleMapPlus = it
-
             snapToRoads = SnapToRoads(BuildConfig.GMAPS_API_KEY)
             osm = Osm()
-
             startDemo()
         }
     }

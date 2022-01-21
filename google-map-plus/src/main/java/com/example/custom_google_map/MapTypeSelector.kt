@@ -37,13 +37,13 @@ class MapTypeSelector: ConstraintLayout {
     constructor(context: Context, attributes: AttributeSet): super(context, attributes) {
         initCompose()
     }
-    private var elevation: Dp = 8.dp
-    private var padding: Dp = 8.dp
-    private var cardShape: Shape = RoundedCornerShape(5)
-    private var cardItemShape: Shape = RoundedCornerShape(20)
-    private var surfaceColor: Color = Color.White
-    private var onSurfaceColor: Color = Color(0xFF3C4043)
-    private var selectedColor: Color = Color(0xFF1A73E8)
+    var elevation by mutableStateOf(8.dp)
+    var padding by mutableStateOf(8.dp)
+    var cardShape by mutableStateOf<Shape>(RoundedCornerShape(5))
+    var cardItemShape by mutableStateOf<Shape>(RoundedCornerShape(20))
+    var surfaceColor by mutableStateOf(Color.White)
+    var onSurfaceColor by mutableStateOf(Color(0xFF3C4043))
+    var selectedColor by mutableStateOf(Color(0xFF1A73E8))
     constructor(
         context: Context,
         elevation: Dp = 8.dp,
@@ -75,19 +75,29 @@ class MapTypeSelector: ConstraintLayout {
             field = value
             selectDefaultType()
         }
-    var googleMapPlus: MapViewPlus.GoogleMapPlus
+    
+    internal var googleMapPlus: MapViewPlus.GoogleMapPlus
         get() = _googleMapPlus ?: throw UninitializedPropertyAccessException("googleMapPlus was not initialized")
         set(value) {
             _googleMapPlus = value
         }
 
     private fun selectDefaultType() {
+        defaultTypeSelected = true
+        terrainTypeSelected = false
+        satelliteTypeSelected = false
         googleMapPlus.mapType = GoogleMap.MAP_TYPE_NORMAL
     }
     private fun selectTerrainType() {
+        defaultTypeSelected = false
+        satelliteTypeSelected = false
+        terrainTypeSelected = true
         googleMapPlus.mapType = GoogleMap.MAP_TYPE_TERRAIN
     }
     private fun selectSatelliteType() {
+        defaultTypeSelected = false
+        satelliteTypeSelected = true
+        terrainTypeSelected = false
         googleMapPlus.mapType = GoogleMap.MAP_TYPE_SATELLITE
     }
 
@@ -133,7 +143,7 @@ class MapTypeSelector: ConstraintLayout {
     
     @ExperimentalAnimationApi
     @Composable
-    fun MapTypeSelector() {
+    private fun MapTypeSelector() {
         ConstraintLayout(
             modifier = Modifier
                 .width(300.dp)
@@ -196,9 +206,6 @@ class MapTypeSelector: ConstraintLayout {
                                 text = "Default",
                                 defaultTypeSelected
                             ) {
-                                defaultTypeSelected = true
-                                terrainTypeSelected = false
-                                satelliteTypeSelected = false
                                 selectDefaultType()
                             }
                             MapTypeSelectorItem(
@@ -206,9 +213,6 @@ class MapTypeSelector: ConstraintLayout {
                                 text = "Satellite",
                                 satelliteTypeSelected
                             ) {
-                                defaultTypeSelected = false
-                                satelliteTypeSelected = true
-                                terrainTypeSelected = false
                                 selectSatelliteType()
                             }
                             MapTypeSelectorItem(
@@ -216,9 +220,6 @@ class MapTypeSelector: ConstraintLayout {
                                 text = "Terrain",
                                 terrainTypeSelected
                             ) {
-                                defaultTypeSelected = false
-                                satelliteTypeSelected = false
-                                terrainTypeSelected = true
                                 selectTerrainType()
                             }
                         }
