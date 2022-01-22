@@ -22,7 +22,7 @@ class MapViewPlus: ConstraintLayout {
     constructor(context: Context): super(context)
     constructor(context: Context, attributes: AttributeSet): super(context, attributes)
 
-    private class StatusController(var durationBetweenLocationUpdates: Long, private val onStatusChange: () -> Unit) {
+    internal class StatusController(var durationBetweenLocationUpdates: Long, private val onStatusChange: () -> Unit) {
         enum class PrimaryStatus {
             NOTHING,
             INTERNET_OFF,
@@ -50,16 +50,14 @@ class MapViewPlus: ConstraintLayout {
                 }
             }
 
-        var internetStatus : InternetStatus = InternetStatus.INTERNET_OFF
-            private
+        private var internetStatus : InternetStatus = InternetStatus.INTERNET_OFF
             set(value) {
                 field = value
                 updatePrimaryStatus()
             }
 
-        var locationTimer : Timer? = null
+        private var locationTimer : Timer? = null
         var locationStatus : LocationStatus = LocationStatus.GPS_OFF
-            private
             set(value) {
                 field = value
 
@@ -245,10 +243,10 @@ class MapViewPlus: ConstraintLayout {
         @ExperimentalAnimationApi
         private fun updateStatusLine() {
             when(statusController.primaryStatus) {
-                StatusController.PrimaryStatus.INTERNET_OFF -> statusBar?.display("INTERNET IS OFF", R.color.gray, true)
-                StatusController.PrimaryStatus.GPS_OFF -> statusBar?.display("GPS IS OFF", R.color.red, true)
-                StatusController.PrimaryStatus.ACQUIRING_LOCATION -> statusBar?.display("ACQUIRING LOCATION", R.color.blue, true)
-                StatusController.PrimaryStatus.LOCATION_RETRIEVED -> statusBar?.display("LOCATION ACQUIRED", R.color.green, false)
+                StatusController.PrimaryStatus.INTERNET_OFF -> statusBar?.display(statusController.primaryStatus, true)
+                StatusController.PrimaryStatus.GPS_OFF -> statusBar?.display(statusController.primaryStatus, true)
+                StatusController.PrimaryStatus.ACQUIRING_LOCATION -> statusBar?.display(statusController.primaryStatus, true)
+                StatusController.PrimaryStatus.LOCATION_RETRIEVED -> statusBar?.display(statusController.primaryStatus, false)
                 StatusController.PrimaryStatus.CHILLING -> statusBar?.hide(now = false)
                 else -> {}
             }
@@ -287,15 +285,13 @@ class MapViewPlus: ConstraintLayout {
                     this.duration = duration
                     interpolator = LinearInterpolator()
 
-                    addUpdateListener(object : ValueAnimator.AnimatorUpdateListener{
-                        override fun onAnimationUpdate(valueAnimator: ValueAnimator?) {
-                            valueAnimator?.let {
-                                val t = it.animatedFraction
-                                val latLng = interpolate(t, from, to)
-                                marker.position = latLng
-                            }
+                    addUpdateListener { valueAnimator ->
+                        valueAnimator?.let {
+                            val t = it.animatedFraction
+                            val latLng = interpolate(t, from, to)
+                            marker.position = latLng
                         }
-                    })
+                    }
                     start()
                 }
             }
@@ -308,8 +304,7 @@ class MapViewPlus: ConstraintLayout {
 
             fun getPosition() = lastLatLng!!
 
-            fun shouldAnimate() =
-                !( penultimateLocationStatus == StatusController.LocationStatus.ACQUIRING_LOCATION && statusController.locationStatus == StatusController.LocationStatus.LOCATION_RETRIEVED)
+            fun shouldAnimate() = !( penultimateLocationStatus == StatusController.LocationStatus.ACQUIRING_LOCATION && statusController.locationStatus == StatusController.LocationStatus.LOCATION_RETRIEVED)
 
             if(lastLatLng == null) return
 
