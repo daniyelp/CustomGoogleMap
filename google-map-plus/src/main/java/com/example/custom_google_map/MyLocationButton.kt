@@ -2,6 +2,7 @@ package com.example.custom_google_map
 
 import android.content.Context
 import android.util.AttributeSet
+import android.widget.FrameLayout
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.FloatingActionButtonDefaults.elevation
@@ -9,12 +10,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.widget.ConstraintLayout
 import kotlinx.android.synthetic.main.button_my_location.view.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 
-class MyLocationButton: ConstraintLayout {
+class MyLocationButton: FrameLayout {
 
     constructor(context: Context): super(context) {
         initCompose()

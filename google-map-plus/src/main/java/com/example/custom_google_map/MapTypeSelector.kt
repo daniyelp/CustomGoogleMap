@@ -2,6 +2,7 @@ package com.example.custom_google_map
 
 import android.content.Context
 import android.util.AttributeSet
+import android.widget.FrameLayout
 import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -25,12 +26,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.gms.maps.GoogleMap
 import kotlinx.android.synthetic.main.selector_map_type.view.*
 
 @ExperimentalAnimationApi
-class MapTypeSelector: ConstraintLayout {
+class MapTypeSelector: FrameLayout {
     constructor(context: Context): super(context) {
         initCompose()
     }

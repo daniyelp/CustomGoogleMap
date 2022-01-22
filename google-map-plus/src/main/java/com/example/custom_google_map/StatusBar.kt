@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
+import android.widget.FrameLayout
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
@@ -21,11 +22,10 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.widget.ConstraintLayout
 import kotlinx.android.synthetic.main.bar_status.view.*
 
 @ExperimentalAnimationApi
-class StatusBar: ConstraintLayout {
+class StatusBar: FrameLayout {
 
     constructor(context: Context): super(context) {
         initCompose()
