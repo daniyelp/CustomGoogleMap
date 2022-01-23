@@ -22,8 +22,7 @@ android {
         buildConfigField "Float", "TERRAIN_MAP_TYPE_Y", getLocalProperty("terrainMapTypeY")
         buildConfigField "Float", "SATELLITE_MAP_TYPE_X", getLocalProperty("satelliteMapTypeX")
         buildConfigField "Float", "SATELLITE_MAP_TYPE_Y", getLocalProperty("satelliteMapTypeY")
-        manifestPlaceholders = [GMAPS_API_KEY:getLocalProperty("GMAPS_API_KEY")]
-        applicationId "com.example.customgooglemapexample"
+        applicationId "com.daniyelp.googlemapplus"
         minSdkVersion 21
         targetSdkVersion 31
         versionCode 1

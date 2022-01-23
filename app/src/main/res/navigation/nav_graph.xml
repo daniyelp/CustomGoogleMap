@@ -6,11 +6,11 @@
 
     <fragment
         android:id="@+id/myFragment"
-        android:name="com.example.customgooglemapexample.play.MyFragment"
+        android:name="com.daniyelp.googlemapplus.play.MyFragment"
         android:label="MyFragment" />
     <fragment
         android:id="@+id/startFragment"
-        android:name="com.example.customgooglemapexample.start.StartFragment"
+        android:name="com.daniyelp.googlemapplus.start.StartFragment"
         android:label="StartFragment" >
         <action
             android:id="@+id/action_startFragment_to_demoFragment"
@@ -21,6 +21,6 @@
     </fragment>
     <fragment
         android:id="@+id/demoFragment"
-        android:name="com.example.customgooglemapexample.demo.DemoFragment"
+        android:name="com.daniyelp.googlemapplus.demo.DemoFragment"
         android:label="DemoFragment" />
 </navigation>
