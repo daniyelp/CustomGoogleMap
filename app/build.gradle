@@ -51,7 +51,7 @@ android {
         jvmTarget = '1.8'
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.0.1'
+        kotlinCompilerExtensionVersion composeVersion
     }
     packagingOptions {
         exclude 'META-INF/*'
@@ -73,6 +73,7 @@ dependencies {
     implementation project(path: ':google-map-plus')
     implementation project(path: ':snap-to-roads')
     implementation project(path: ':openstreetmap')
+    implementation project(path: ':location-tracker')
 
     implementation "androidx.core:core-ktx:$coreKtxVersion"
     implementation "androidx.fragment:fragment-ktx:$fragmentKtxVersion"

@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/google-map-plus" />
+            <option value="$PROJECT_DIR$/location-tracker" />
             <option value="$PROJECT_DIR$/openstreetmap" />
             <option value="$PROJECT_DIR$/snap-to-roads" />
           </set>

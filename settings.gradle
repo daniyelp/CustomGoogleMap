@@ -4,3 +4,4 @@ if (!System.env.JITPACK)
 include ':google-map-plus'
 include ':snap-to-roads'
 include ':openstreetmap'
+include ':location-tracker'

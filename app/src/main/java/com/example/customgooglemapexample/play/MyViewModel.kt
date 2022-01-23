@@ -1,7 +1,6 @@
 package com.example.customgooglemapexample.play
 
 import androidx.lifecycle.*
-import com.example.custom_google_map.FakeLocationTracker
 import com.example.customgooglemapexample.util.*
 import com.example.gpsbroadcastreceiver.GpsBroadcastReceiver
 import com.example.internetbroadcastreceiver.InternetBroadcastReceiver

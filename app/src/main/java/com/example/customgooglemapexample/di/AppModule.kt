@@ -1,9 +1,8 @@
 package com.example.customgooglemapexample.di
 
 import android.content.Context
-import com.example.customgooglemapexample.R
 import com.example.custom_google_map.LocationTracker
-import com.example.custom_google_map.FakeLocationTracker
+import com.example.customgooglemapexample.play.FakeLocationTracker
 import com.example.customgooglemapexample.BuildConfig
 import com.example.gpsbroadcastreceiver.GpsBroadcastReceiver
 import com.example.internetbroadcastreceiver.InternetBroadcastReceiver

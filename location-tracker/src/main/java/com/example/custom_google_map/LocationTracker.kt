@@ -7,11 +7,6 @@ import android.os.Looper
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.model.LatLng
 import java.lang.Exception
 
 class LocationTracker constructor(
@@ -23,24 +18,26 @@ class LocationTracker constructor(
     private val _receivingLocationUpdates = MutableLiveData<Boolean>()
     val receivingLocationUpdates: LiveData<Boolean> = _receivingLocationUpdates
 
-    private val _lastLocation = MutableLiveData<LatLng>()
-    val lastLocation: LiveData<LatLng> = _lastLocation
+    private val _lastLocation = MutableLiveData<com.google.android.gms.maps.model.LatLng>()
+    val lastLocation: LiveData<com.google.android.gms.maps.model.LatLng> = _lastLocation
 
     private val fusedLocationProviderClient =
-        LocationServices.getFusedLocationProviderClient(context)
+        com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(context)
 
-    private val locationRequest = LocationRequest().apply {
+    private val locationRequest = com.google.android.gms.location.LocationRequest().apply {
         this.interval = interval
         this.fastestInterval = fastestInterval
-        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        priority = com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
-    private val locationCallback: LocationCallback = object : LocationCallback() {
+    private val locationCallback: com.google.android.gms.location.LocationCallback = object : com.google.android.gms.location.LocationCallback() {
         @Override
-        override fun onLocationResult(result: LocationResult) {
+        override fun onLocationResult(result: com.google.android.gms.location.LocationResult) {
             super.onLocationResult(result)
-            result.locations.forEach {
-                _lastLocation.value = LatLng(it.latitude, it.longitude)
+            result.locations
+                .forEach {
+                _lastLocation.value =
+                    com.google.android.gms.maps.model.LatLng(it.latitude, it.longitude)
             }
         }
     }
