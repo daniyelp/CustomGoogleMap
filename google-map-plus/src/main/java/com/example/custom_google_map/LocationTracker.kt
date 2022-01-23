@@ -37,9 +37,9 @@ class LocationTracker constructor(
 
     private val locationCallback: LocationCallback = object : LocationCallback() {
         @Override
-        override fun onLocationResult(result: LocationResult?) {
+        override fun onLocationResult(result: LocationResult) {
             super.onLocationResult(result)
-            result?.locations?.forEach {
+            result.locations.forEach {
                 _lastLocation.value = LatLng(it.latitude, it.longitude)
             }
         }

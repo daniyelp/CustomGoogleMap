@@ -241,20 +241,21 @@ class MyFragment : Fragment() {
                         _markers.clear()
                     }
                     Status.ADDED_ELEMENT -> {
-                        _markers.add(
-                            googleMapPlus.addMarker(
-                                MarkerOptions()
-                                    .position(it.list.last())
-                                    .icon(
-                                        when (it.amSpecialLevel) {
-                                            0 -> BitmapDescriptorFactory.defaultMarker((_markers.size * 10).toFloat() % 360)
-                                            2 -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
-                                            3 -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
-                                            else -> BitmapDescriptorFactory.defaultMarker((_markers.size * 10).toFloat() % 360)
-                                        }
-                                    )
-                            )
+                        val newMarker = googleMapPlus.addMarker(
+                            MarkerOptions()
+                                .position(it.list.last())
+                                .icon(
+                                    when (it.amSpecialLevel) {
+                                        0 -> BitmapDescriptorFactory.defaultMarker((_markers.size * 10).toFloat() % 360)
+                                        2 -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                                        3 -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
+                                        else -> BitmapDescriptorFactory.defaultMarker((_markers.size * 10).toFloat() % 360)
+                                    }
+                                )
                         )
+                        newMarker?.let {
+                            _markers.add(it)
+                        }
                     }
                     Status.REMOVED_LAST_ELEMENT -> {
                         _markers.removeLast().remove()
