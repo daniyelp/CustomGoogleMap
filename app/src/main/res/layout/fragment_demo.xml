@@ -5,19 +5,19 @@
     android:layout_height="match_parent"
     android:id="@+id/layout_demo">
 
-    <com.example.custom_google_map.MapViewPlus
+    <com.daniyelp.googlemapplus.MapViewPlus
         android:id="@+id/map_custom_demo"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.example.custom_google_map.StatusBar
+    <com.daniyelp.googlemapplus.StatusBar
         android:id="@+id/line_primary_status_demo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.example.custom_google_map.MapTypeSelector
+    <com.daniyelp.googlemapplus.MapTypeSelector
         android:id="@+id/selector_map_type_demo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="60dp"/>
 
-    <com.example.custom_google_map.MyLocationButton
+    <com.daniyelp.googlemapplus.MyLocationButton
         android:id="@+id/button_my_location_demo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
