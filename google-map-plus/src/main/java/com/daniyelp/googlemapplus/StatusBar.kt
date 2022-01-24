@@ -46,10 +46,10 @@ class StatusBar: FrameLayout {
     var gpsOffTextColor by mutableStateOf(Color.White)
     var acquiringLocationTextColor by mutableStateOf(Color.White)
     var locationRetrievedTextColor by mutableStateOf(Color.White)
-    var internetOffBackgroundColor by mutableStateOf(Color.LightGray)
-    var gpsOffBackgroundColor by mutableStateOf(Color.Red)
-    var acquiringLocationBackgroundColor by mutableStateOf(Color.Blue)
-    var locationRetrievedBackgroundColor by mutableStateOf(Color.Green)
+    var internetOffBackgroundColor by mutableStateOf(MapsGray)
+    var gpsOffBackgroundColor by mutableStateOf(MapsRed)
+    var acquiringLocationBackgroundColor by mutableStateOf(MapsBlue)
+    var locationRetrievedBackgroundColor by mutableStateOf(MapsGreen)
 
     constructor(
         elevation: Dp = 8.dp,
@@ -64,10 +64,10 @@ class StatusBar: FrameLayout {
         gpsOffTextColor: Color = Color.White,
         acquiringLocationTextColor: Color = Color.White,
         locationRetrievedTextColor: Color = Color.White,
-        internetOffBackgroundColor: Color = Color.LightGray,
-        gpsOffBackgroundColor: Color = Color.Red,
-        acquiringLocationBackgroundColor: Color = Color.Blue,
-        locationRetrievedBackgroundColor: Color = Color.Green,
+        internetOffBackgroundColor: Color = MapsGray,
+        gpsOffBackgroundColor: Color = MapsRed,
+        acquiringLocationBackgroundColor: Color = MapsBlue,
+        locationRetrievedBackgroundColor: Color = MapsGreen,
     ): super(context) {
         this.elevation = elevation
         this.padding = padding
@@ -152,6 +152,7 @@ class StatusBar: FrameLayout {
     @Composable
     private fun StatusBar() {
         AnimatedVisibility(
+            modifier = Modifier.clip(shape),
             visible = visible,
             enter = slideInHorizontally(
                 initialOffsetX = { -it },
@@ -160,14 +161,12 @@ class StatusBar: FrameLayout {
             exit = slideOutHorizontally(
                 targetOffsetX = { -it },
                 animationSpec = tween(durationMillis = 300)
-            ),
-            modifier = Modifier
-                .padding(padding)
-                .clip(shape = shape)
+            )
         ) {
             Card(
+                modifier = Modifier.padding(padding),
                 elevation = elevation,
-                backgroundColor = backgroundColor
+                backgroundColor = backgroundColor,
             ) {
                 Text(
                     modifier = Modifier.padding(6.dp),

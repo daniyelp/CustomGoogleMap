@@ -25,6 +25,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.daniyelp.googlemapplus.MapViewPlus
+import com.daniyelp.googlemapplus.MapsGreen
+import com.daniyelp.googlemapplus.MapsRed
 import com.example.customgooglemapexample.R
 import com.example.customgooglemapexample.databinding.FragmentMineBinding
 import com.daniyelp.googlemapplus.util.Status
@@ -128,7 +130,7 @@ class MyFragment : Fragment() {
                     Button(
                         onClick = viewModel::onNewStartMarker,
                         enabled = addStartMarkerEnabled,
-                        colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.green))
+                        colors = ButtonDefaults.buttonColors(backgroundColor = MapsGreen)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_flag),
@@ -139,7 +141,7 @@ class MyFragment : Fragment() {
                     Button(
                         onClick = viewModel::onNewFinishMarker,
                         enabled = addFinishMarkerEnabled,
-                        colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.red))
+                        colors = ButtonDefaults.buttonColors(backgroundColor = MapsRed)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_flag),

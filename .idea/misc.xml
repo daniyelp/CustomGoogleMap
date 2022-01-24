@@ -5,7 +5,12 @@
       <map>
         <entry key="..\:/Users/DanielP/AndroidStudioProjects/CustomGoogleMap/app/src/main/res/layout/activity_main.xml" value="0.18342391304347827" />
         <entry key="..\:/Users/DanielP/AndroidStudioProjects/CustomGoogleMap/app/src/main/res/layout/fragment_mine.xml" value="0.18342391304347827" />
+        <entry key="..\:/Users/DanielP/AndroidStudioProjects/CustomGoogleMap/google-map-plus/src/main/res/drawable/background_map_type_btn.xml" value="0.1" />
+        <entry key="..\:/Users/DanielP/AndroidStudioProjects/CustomGoogleMap/google-map-plus/src/main/res/drawable/background_map_type_btn_post_click.xml" value="0.13802083333333334" />
+        <entry key="..\:/Users/DanielP/AndroidStudioProjects/CustomGoogleMap/google-map-plus/src/main/res/drawable/background_rounded_corners.xml" value="0.13802083333333334" />
         <entry key="..\:/Users/DanielP/AndroidStudioProjects/CustomGoogleMap/google-map-plus/src/main/res/drawable/ic_location.xml" value="0.1388888888888889" />
+        <entry key="..\:/Users/DanielP/AndroidStudioProjects/CustomGoogleMap/google-map-plus/src/main/res/drawable/ic_location_border.xml" value="0.1640625" />
+        <entry key="..\:/Users/DanielP/AndroidStudioProjects/CustomGoogleMap/google-map-plus/src/main/res/drawable/ic_location_small.xml" value="0.13802083333333334" />
         <entry key="..\:/Users/DanielP/AndroidStudioProjects/CustomGoogleMap/google-map-plus/src/main/res/drawable/ic_my_location.xml" value="0.1388888888888889" />
         <entry key="..\:/Users/DanielP/AndroidStudioProjects/CustomGoogleMap/google-map-plus/src/main/res/layout/bar_status.xml" value="0.15520833333333334" />
         <entry key="..\:/Users/DanielP/AndroidStudioProjects/CustomGoogleMap/google-map-plus/src/main/res/layout/button_my_location.xml" value="0.12454710144927536" />

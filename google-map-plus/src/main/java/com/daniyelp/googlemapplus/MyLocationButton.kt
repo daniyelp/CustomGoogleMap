@@ -26,15 +26,15 @@ class MyLocationButton: FrameLayout {
     var elevation by mutableStateOf(8.dp)
     var padding by mutableStateOf(16.dp)
     var backgroundColor by mutableStateOf(Color.White)
-    var disabledColor by mutableStateOf(Color(0xFF3C4043))
-    var enabledColor by mutableStateOf(Color.Blue)
+    var disabledColor by mutableStateOf(Color.Black)
+    var enabledColor by mutableStateOf(MapsBlue)
     constructor(
         context: Context,
         elevation: Dp = 8.dp,
         padding: Dp = 16.dp,
         backgroundColor: Color = Color.White,
-        disabledColor: Color = Color(0xFF3C4043),
-        enabledColor: Color = Color.Blue
+        disabledColor: Color = Color.Black,
+        enabledColor: Color = MapsBlue
     ): super(context) {
         this.elevation = elevation
         this.padding = padding

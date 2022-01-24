@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -43,8 +44,8 @@ class MapTypeSelector: FrameLayout {
     var cardShape by mutableStateOf<Shape>(RoundedCornerShape(5))
     var cardItemShape by mutableStateOf<Shape>(RoundedCornerShape(20))
     var surfaceColor by mutableStateOf(Color.White)
-    var onSurfaceColor by mutableStateOf(Color(0xFF3C4043))
-    var selectedColor by mutableStateOf(Color(0xFF1A73E8))
+    var onSurfaceColor by mutableStateOf(Color.Black)
+    var selectedColor by mutableStateOf(MapsBlue)
     constructor(
         context: Context,
         elevation: Dp = 8.dp,
@@ -52,8 +53,8 @@ class MapTypeSelector: FrameLayout {
         cardShape: Shape = RoundedCornerShape(5),
         cardItemShape: Shape = RoundedCornerShape(20),
         surfaceColor: Color = Color.White,
-        onSurfaceColor: Color = Color(0xFF3C4043),
-        selectedColor: Color = Color(0xFF1A73E8),
+        onSurfaceColor: Color = Color.Black,
+        selectedColor: Color = MapsBlue,
     ): super(context) {
         this.elevation = elevation
         this.padding = padding
@@ -167,7 +168,7 @@ class MapTypeSelector: FrameLayout {
                 elevation = elevation(
                     defaultElevation = elevation,
                     pressedElevation = elevation * 2),
-                backgroundColor = surfaceColor,
+                backgroundColor = surfaceColor
             ) {
                 Icon(
                     painter = painterResource(id = toggleIcon),

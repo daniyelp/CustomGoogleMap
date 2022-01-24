@@ -8,6 +8,8 @@ import android.os.Looper
 import android.util.AttributeSet
 import android.view.animation.LinearInterpolator
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.custom_google_map.R
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -178,14 +180,20 @@ class MapViewPlus: ConstraintLayout {
                 googleMap.mapType = value
             }
 
-        private var locationMarker: Marker? = null
+        private inner class LocationMarkers(
+            var smaller: Marker,
+            var bigger: Marker,
+            var border: Marker
+        )
+
+        private var locationMarkers: LocationMarkers? = null
 
         private var lastLatLng: LatLng? = null
             set(value) {
                 field = value
                 statusController.newLocationAvailable()
                 updateCamera()
-                updateLocationMarker()
+                updateLocationMarkers()
             }
 
         var gpsOn: Boolean = false
@@ -219,6 +227,18 @@ class MapViewPlus: ConstraintLayout {
                 )
             }
 
+        var myLocationIconEnabledColor: Color = MapsBlue
+            set(value) {
+                field = value
+                updateLocationMarkers()
+            }
+
+        var myLocationIconDisabledColor: Color = MapsGray
+            set(value) {
+                field = value
+                updateLocationMarkers()
+            }
+
         init {
             googleMap.uiSettings.isCompassEnabled = false
             googleMap.uiSettings.isMyLocationButtonEnabled = false
@@ -235,7 +255,7 @@ class MapViewPlus: ConstraintLayout {
             }
 
             statusController = StatusController(durationBetweenLocationUpdates) {
-                updateLocationMarker()
+                updateLocationMarkers()
                 updateStatusLine()
             }
 
@@ -257,24 +277,32 @@ class MapViewPlus: ConstraintLayout {
 
         private var penultimateLocationStatus: StatusController.LocationStatus? = null
 
-        private fun updateLocationMarker() {
+        private fun updateLocationMarkers() {
 
-            fun getIcon(color: Int) = vectorToBitmapDescriptor(
-                R.drawable.ic_location,
-                color,
+            fun getSmallerIcon(color: Color) = vectorToBitmapDescriptor(
+                R.drawable.ic_location_small,
+                color.toArgb(),
                 resources
             )
 
-            fun updateMarkerColor(marker: Marker, color: Int) {
-                marker.setIcon(getIcon(color))
-            }
+            fun getBiggerIcon() = vectorToBitmapDescriptor(
+                R.drawable.ic_location_big,
+                android.graphics.Color.WHITE,
+                resources
+            )
 
-            fun animateMarker(marker: Marker, to: LatLng, duration: Long = 1000) {
+            fun getBorderIcon() = vectorToBitmapDescriptor(
+                R.drawable.ic_location_border,
+                android.graphics.Color.LTGRAY,
+                resources
+            )
+
+            fun animateMarkers(markers: LocationMarkers, to: LatLng, duration: Long = 1000) {
                 valueAnimator.removeAllUpdateListeners()
                 valueAnimator.end()
                 valueAnimator.cancel()
 
-                val from = marker.position
+                val from = markers.smaller.position
 
                 fun interpolate(t: Float, a: LatLng, b: LatLng) =
                     LatLng (
@@ -290,17 +318,19 @@ class MapViewPlus: ConstraintLayout {
                         valueAnimator?.let {
                             val t = it.animatedFraction
                             val latLng = interpolate(t, from, to)
-                            marker.position = latLng
+                            markers.smaller.position = latLng
+                            markers.bigger.position = latLng
+                            markers.border.position = latLng
                         }
                     }
                     start()
                 }
             }
 
-            fun getColor() = when (statusController.locationStatus) {
-                StatusController.LocationStatus.LOCATION_RETRIEVED -> android.graphics.Color.BLUE
-                StatusController.LocationStatus.CHILLING -> android.graphics.Color.BLUE
-                else -> android.graphics.Color.LTGRAY
+            fun getSmallerIconColor() = when (statusController.locationStatus) {
+                StatusController.LocationStatus.LOCATION_RETRIEVED -> myLocationIconEnabledColor
+                StatusController.LocationStatus.CHILLING -> myLocationIconEnabledColor
+                else -> myLocationIconDisabledColor
             }
 
             fun getPosition() = lastLatLng!!
@@ -309,22 +339,36 @@ class MapViewPlus: ConstraintLayout {
 
             if(lastLatLng == null) return
 
-            if(locationMarker == null) {
-                //create a new marker at lastLatLng and with the color based on tracking
-                val markerOptions = MarkerOptions()
+            if(locationMarkers == null) {
+                //create new markers at lastLatLng and with the color based on tracking
+                val smallerMarkerOptions = MarkerOptions()
                     .anchor(0.5f, 0.5f)
                     .position(getPosition())
-                    .icon(getIcon(getColor()))
-                locationMarker = googleMap.addMarker(markerOptions)
+                    .icon(getSmallerIcon(getSmallerIconColor()))
+                val biggerMarkerOptions = MarkerOptions()
+                    .anchor(0.5f, 0.5f)
+                    .position(getPosition())
+                    .icon(getBiggerIcon())
+                val borderMarkerOptions = MarkerOptions()
+                    .anchor(0.5f, 0.5f)
+                    .position(getPosition())
+                    .icon(getBorderIcon())
+                val borderMarker = googleMap.addMarker(borderMarkerOptions)
+                val biggerMarker = googleMap.addMarker(biggerMarkerOptions)
+                val smallerMarker = googleMap.addMarker(smallerMarkerOptions)
+                if(smallerMarker != null && biggerMarker != null && borderMarker != null) {
+                    locationMarkers = LocationMarkers(smallerMarker, biggerMarker, borderMarker)
+                }
             } else {
-                updateMarkerColor(locationMarker!!, getColor())
+                locationMarkers!!.smaller.setIcon(getSmallerIcon(getSmallerIconColor()))
                 if(shouldAnimate()) {
-                    animateMarker(locationMarker!!, getPosition(), duration = animationDuration)
+                    animateMarkers(locationMarkers!!, getPosition(), duration = animationDuration)
                 } else {
-                    locationMarker!!.position = getPosition()
+                    locationMarkers!!.smaller.position = getPosition()
+                    locationMarkers!!.bigger.position = getPosition()
+                    locationMarkers!!.border.position = getPosition()
                 }
             }
-
             penultimateLocationStatus = statusController.locationStatus
         }
 
